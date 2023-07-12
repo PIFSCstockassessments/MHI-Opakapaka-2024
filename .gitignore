@@ -41,6 +41,7 @@ vignettes/*.pdf
 
 #Data folder
 Data/*
+*.zip
 
 # SS files 
 *.sso
@@ -79,3 +80,8 @@ runnumber.ss
 *.eva
 *.std
 *.tmp
+*.log
+*.png
+*.html
+*.rep
+plotInfoTable*.csv

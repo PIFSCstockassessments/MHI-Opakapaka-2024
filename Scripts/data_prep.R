@@ -1,15 +1,14 @@
 pacman::p_load("this.path", "tidyverse","data.table","readxl","StepwiseLH","LBSPR", "r4ss")
 
 main_dir <- this.path::here(..=1)
-LH <- read_excel(file.path(main_dir,"Data","Priors Data",paste0("Deep7_LH.xlsx"))) 
-
-S.CODE <- LH%>% 
-  filter(SEX=="F") %>% 
-  select(SCIENTIFIC_NAME,SPECIES,SPECIES_ID,LW_A,LW_B,BINWIDTH)
+#LH <- read_excel(file.path(main_dir,"Data","Priors Data",paste0("Deep7_LH.xlsx"))) 
+# 
+# S.CODE <- LH%>% 
+#   filter(SEX=="F") %>% 
+#   select(SCIENTIFIC_NAME,SPECIES,SPECIES_ID,LW_A,LW_B,BINWIDTH)
 
 BFISH.LENGTHS <- fread(file.path(main_dir,"Data", "paka_catch_2016_2022.csv")) %>% 
   filter(SPECIES_CD == "PRFI" & !is.na(LENGTH_CM)) %>% 
-  #separate(col = BFISH, into = c("BFISH", "Year", "seas"), sep = "_") %>% 
   select(c(YEAR, SAMPLE_ID, LENGTH_CM)) %>% 
   mutate(YEAR = as.numeric(YEAR)+1)
 

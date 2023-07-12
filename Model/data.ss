@@ -285,8 +285,8 @@
 #_len_info
 #_mintailcomp	addtocomp	combine_M_F	CompressBins	CompError	ParmSelect	minsamplesize
 -1	0.001	0	0	0	1	0.001	#_1
--1	0.001	0	0	0	2	0.001	#_2
--1	0.001	0	0	0	3	0.001	#_3
+-1	0.001	0	0	0	1	0.001	#_2
+-1	0.001	0	0	1	1	0.001	#_3
 14 #_N_lbins
 #_lbin_vector
 10 15 20 25 30 35 40 45 50 55 60 65 70 75 #_lbin_vector
