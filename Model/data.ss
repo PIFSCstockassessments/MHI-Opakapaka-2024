@@ -1,5 +1,5 @@
 #V3.30
-#C data file for simple example
+#C data file for APVI
 #
 1949 #_styr
 2023 #_endyr
@@ -7,15 +7,15 @@
 12 #_months_per_seas
 2 #_Nsubseasons
 1 #_spawn_month
-2 #_Nsexes
-40 #_Nages
+-1 #_Nsexes
+32 #_Nages
 1 #_N_areas
 3 #_Nfleets
 #_fleetinfo
 #_type	surveytiming	area	units	need_catch_mult	fleetname
 1	-1	1	1	0	FRS     	#_1
-1	-1	1	2	0	Non_comm	#_2
-3	 1	1	2	0	BFISH   	#_3
+1	-1	1	1	0	Non_comm	#_2
+3	 1	1	1	0	BFISH   	#_3
 #_Catch data
 #_year	season	fleet	catch	catch_se
  -999	1	1	        0	0.01	#_1         
@@ -93,7 +93,7 @@
  2020	1	1	 0.064362	0.01	#_73        
  2021	1	1	  0.05676	0.01	#_74        
  2022	1	1	0.0819432	0.01	#_75        
- 2023	1	1	   0.0696	0.01	#_76        
+ 2023	1	1	   0.0677	0.01	#_76        
  -999	1	2	        0	0.01	#_77        
  1949	1	2	 0.201644	0.01	#_78        
  1950	1	2	 0.204742	0.01	#_79        
@@ -169,19 +169,19 @@
  2020	1	2	0.0666056	0.01	#_149       
  2021	1	2	0.0587386	0.01	#_150       
  2022	1	2	0.0847997	0.01	#_151       
- 2023	1	2	 0.070048	0.01	#_152       
+ 2023	1	2	     0.07	0.01	#_152       
 -9999	0	0	        0	   0	#_terminator
 #_CPUE_and_surveyabundance_observations
 #_Units:  0=numbers; 1=biomass; 2=F; >=30 for special types
 #_Errtype:  -1=normal; 0=lognormal; >0=T
 #_SD_Report: 0=no sdreport; 1=enable sdreport
 #_Fleet	Units	Errtype	SD_Report
-1	1	0	0	#_FRS     
-2	1	0	0	#_Non_comm
-3	0	0	0	#_BFISH   
+1	1	0	0	#_1
+2	1	0	0	#_2
+3	1	0	0	#_3
 #
 #_CPUE_data
-#_year	seas	index	obs	se_log
+#_yr	seas	index	obs	obs_log
  1949	7	1	113.718	0.0419511	#_1         
  1950	7	1	111.777	0.0346595	#_2         
  1951	7	1	126.802	0.0353818	#_3         
@@ -279,28 +279,28 @@
 2 # length bin method: 1=use databins; 2=generate from binwidth,min,max below; 3=read vector
 1 # binwidth for population size comp
 1 # minimum size in the population (lower edge of first bin and size at age 0.00)
-95 # maximum size in the population (lower edge of last bin)
+94 # maximum size in the population (lower edge of last bin)
 1 #_use_lencomp
 #
 #_len_info
 #_mintailcomp	addtocomp	combine_M_F	CompressBins	CompError	ParmSelect	minsamplesize
--1	1e-07	0	0	1	1	0.01	#_FRS     
--1	1e-07	0	0	2	1	0.01	#_Non_comm
--1	1e-07	0	0	3	1	0.01	#_BFISH   
+-1	0.001	0	0	0	1	0.001	#_1
+-1	0.001	0	0	0	2	0.001	#_2
+-1	0.001	0	0	0	3	0.001	#_3
 14 #_N_lbins
 #_lbin_vector
 10 15 20 25 30 35 40 45 50 55 60 65 70 75 #_lbin_vector
 #
 #_lencomp
-#_Yr	Seas	FltSvy	Gender	Part	Nsamp	l10	l15	l20	l25	l30	l35	l40	l45	l50	l55	l60	l65	l70	l75	m10	m15	m20	m25	m30	m35	m40	m45	m50	m55	m60	m65	m70	m75
- 2017	 1	 3	0	0	186	1	12	13	14	25	22	61	14	 5	 6	6	3	2	2	1	12	13	14	25	22	61	14	 5	 6	6	3	2	2	#_1         
- 2018	 1	 3	0	0	126	0	 6	17	 4	 2	18	23	21	15	13	7	0	0	0	0	 6	17	 4	 2	18	23	21	15	13	7	0	0	0	#_2         
- 2019	-1	 3	0	0	 30	0	 0	 1	 6	 4	 6	 5	 4	 0	 1	1	0	1	1	0	 0	 1	 6	 4	 6	 5	 4	 0	 1	1	0	1	1	#_3         
- 2020	-1	-3	0	0	 39	0	 0	 5	 2	 5	 6	 4	 5	 8	 2	2	0	0	0	0	 0	 5	 2	 5	 6	 4	 5	 8	 2	2	0	0	0	#_4         
- 2021	 1	 3	0	0	 71	0	 3	11	 5	 5	21	13	 4	 0	 5	4	0	0	0	0	 3	11	 5	 5	21	13	 4	 0	 5	4	0	0	0	#_5         
- 2022	 1	 3	0	0	157	1	 2	21	23	44	21	13	11	 7	 2	7	4	1	0	1	 2	21	23	44	21	13	11	 7	 2	7	4	1	0	#_6         
- 2023	 1	 3	0	0	 99	0	 4	15	37	18	15	 4	 4	 1	 0	0	1	0	0	0	 4	15	37	18	15	 4	 4	 1	 0	0	1	0	0	#_7         
--9999	 0	 0	0	0	  0	0	 0	 0	 0	 0	 0	 0	 0	 0	 0	0	0	0	0	0	 0	 0	 0	 0	 0	 0	 0	 0	 0	0	0	0	0	#_terminator
+#_Yr	Seas	FltSvy	Gender	Part	Nsamp	l10	l15	l20	l25	l30	l35	l40	l45	l50	l55	l60	l65	l70	l75
+ 2017	 1	 3	0	0	186	1	12	13	14	25	22	61	14	 5	 6	6	3	2	2	#_1         
+ 2018	 1	 3	0	0	126	0	 6	17	 4	 2	18	23	21	15	13	7	0	0	0	#_2         
+ 2019	-1	 3	0	0	 30	0	 0	 1	 6	 4	 6	 5	 4	 0	 1	1	0	1	1	#_3         
+ 2020	-1	-3	0	0	 39	0	 0	 5	 2	 5	 6	 4	 5	 8	 2	2	0	0	0	#_4         
+ 2021	 1	 3	0	0	 71	0	 3	11	 5	 5	21	13	 4	 0	 5	4	0	0	0	#_5         
+ 2022	 1	 3	0	0	157	1	 2	21	23	44	21	13	11	 7	 2	7	4	1	0	#_6         
+ 2023	 1	 3	0	0	 99	0	 4	15	37	18	15	 4	 4	 1	 0	0	1	0	0	#_7         
+-9999	 0	 0	0	0	  0	0	 0	 0	 0	 0	 0	 0	 0	 0	 0	0	0	0	0	#_terminator
 0 #_N_agebins
 #
 #_MeanSize_at_Age_obs

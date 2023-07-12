@@ -72,24 +72,31 @@ lencomp <- BFISH.LENGTHS %>%
          FltSvy = ifelse(Yr == 2020, -3, 3),
          Nsamp = rowSums(select(., starts_with("l")))) %>% 
   select(Yr, Seas, FltSvy, Gender, Part, Nsamp, starts_with("l"))
-mlen <- lencomp %>% select(starts_with("l")) 
-names(mlen) <- str_replace(names(mlen), pattern = "l", "m")
-lencomp <- cbind(lencomp, mlen)
 
 ## Writing data to data.ss file
 data <- SS_readdat_3.30(file = file.path(main_dir, "Model", "data.ss"))
+data$Nfleets <- 3
 data$styr <- 1949
 data$endyr <- 2023
 data$catch <- CATCH 
-data$fleetinfo$fleetname <- c("FRS", "Non_comm", "BFISH")
-data$fleetinfo$type <- c(1,1,3)
-data$fleetinfo$surveytiming <- c(-1,-1,1)
+data$fleetinfo <- data.frame(type = c(1,1,3), surveytiming = c(-1,-1,1), area = c(1,1,1),
+                             units = c(1,1,1), need_catch_mult = c(0,0,0), 
+                             fleetname = c("FRS", "Non_comm", "BFISH"))
 data$CPUE <- CPUE
-data$CPUEinfo$Units <- c(1,1,1)
-data$CPUEinfo$SD_Report <- c(0,0,0)
+data$CPUEinfo <- data.frame(Fleet = c(1,2,3), Units =c(1,1,1), Errtype = c(0,0,0), SD_Report = c(0,0,0))
+
 
 data$lencomp <- as.data.frame(lencomp)
 data$lbin_vector <- sort(unique(BFISH.LENGTHS$LENGTH_BIN_START))
 data$N_lbins <- length(data$lbin_vector)
+data$len_info <- data.frame(
+  mintailcomp = rep(-1, 3),
+  addtocomp = rep(0.001, 3), 
+  combine_M_F = rep(0,3),
+  CompressBins = rep(0,3), 
+  CompError = rep(0,3),
+  ParmSelect = c(1,2,3),
+  minsamplesize = c(.001, .001, .001)
+)
 
 SS_writedat_3.30(data, outfile = file.path(main_dir, "Model", "data.ss"), overwrite = TRUE)
