@@ -35,7 +35,7 @@
 0 #_natM_type:_0=1Parm; 1=N_breakpoints;_2=Lorenzen;_3=agespecific;_4=agespec_withseasinterpolate;_5=Maunder_M;_6=Age-range_Lorenzen
 #_no additional input for selected M option; read 1P per morph
 1 # GrowthModel: 1=vonBert with L1&L2; 2=Richards with L1&L2; 3=age_specific_K_incr; 4=age_specific_K_decr;5=age_specific_K_each; 6=NA; 7=NA; 8=growth cessation
-1 #_Age(post-settlement)_for_L1;linear growth below this
+0 #_Age(post-settlement)_for_L1;linear growth below this
 999 #_Growth_Age_for_L2 (999 to use as Linf)
 -999 #_exponential decay for growth above maxage (value should approx initial Z; -999 replicates 3.24; -998 to not allow growth above maxage)
 0 #_placeholder for future growth feature
@@ -50,16 +50,16 @@
 #
 #_growth_parms
 #_LO	HI	INIT	PRIOR	PR_SD	PR_type	PHASE	env_var&link	dev_link	dev_minyr	dev_maxyr	dev_PH	Block	Block_Fxn
-    0	      2	   0.675	  0	  0	0	 -3	0	0	0	0	0	0	0	#_NatM_p_1_Fem_GP_3        
-    1	     20	    11.2	  0	  0	0	 -4	0	0	0	0	0	0	0	#_L_at_Amin_Fem_GP_3       
-   20	     40	    24.6	  0	  0	0	 -4	0	0	0	0	0	0	0	#_L_at_Amax_Fem_GP_3       
- 0.05	    0.5	    0.38	  0	  0	0	 -3	0	0	0	0	0	0	0	#_VonBert_K_Fem_GP_3       
- 0.05	   0.25	    0.07	  0	  0	0	 -3	0	0	0	0	0	0	0	#_CV_young_Fem_GP_3        
- 0.05	   0.25	    0.07	  0	  0	0	 -3	0	0	0	0	0	0	0	#_CV_old_Fem_GP_3          
-   -1	      3	1.28e-05	  0	  0	0	 -3	0	0	0	0	0	0	0	#_Wtlen_1_Fem_GP_1         
-   -1	      4	    3.12	  0	  0	0	 -3	0	0	0	0	0	0	0	#_Wtlen_2_Fem_GP_1         
-   15	     60	      18	  0	  0	0	 -3	0	0	0	0	0	0	0	#_Mat50%_Fem_GP_1          
-   -3	      3	      -3	  0	  0	0	 -3	0	0	0	0	0	0	0	#_Mat_slope_Fem_GP_1       
+    0	      2	    0.18	  0	  0	0	 -3	0	0	0	0	0	0	0	#_NatM_p_1_Fem_GP_1        
+    1	     60	     6.2	  0	  0	0	 -4	0	0	0	0	0	0	0	#_L_at_Amin_Fem_GP_1       
+   50	    100	    83.3	  0	  0	0	 -4	0	0	0	0	0	0	0	#_L_at_Amax_Fem_GP_1       
+ 0.05	   0.25	   0.129	  0	  0	0	 -3	0	0	0	0	0	0	0	#_VonBert_K_Fem_GP_1       
+ 0.05	   0.25	     0.1	  0	  0	0	 -3	0	0	0	0	0	0	0	#_CV_young_Fem_GP_1        
+ 0.05	   0.25	     0.1	  0	  0	0	 -3	0	0	0	0	0	0	0	#_CV_old_Fem_GP_1          
+   -1	      3	5.82e-05	  0	  0	0	 -3	0	0	0	0	0	0	0	#_Wtlen_1_Fem_GP_1         
+   -1	      4	    2.77	  0	  0	0	 -3	0	0	0	0	0	0	0	#_Wtlen_2_Fem_GP_1         
+   35	     60	    46.2	  0	  0	0	 -3	0	0	0	0	0	0	0	#_Mat50%_Fem_GP_2          
+   -3	      3	   -0.98	  0	  0	0	 -3	0	0	0	0	0	0	0	#_Mat_slope_Fem_GP_1       
    -3	      3	       1	  0	  0	0	 -3	0	0	0	0	0	0	0	#_Eggs/kg_inter_Fem_GP_1   
    -3	      3	       0	  0	  0	0	 -3	0	0	0	0	0	0	0	#_Eggs/kg_slope_wt_Fem_GP_1
   0.1	     10	       1	  1	  1	0	 -1	0	0	0	0	0	0	0	#_CohortGrowDev            
@@ -75,11 +75,11 @@
 0 # 0/1 to use steepness in initial equ recruitment calculation
 0 # future feature: 0/1 to make realized sigmaR a function of SR curvature
 #_LO	HI	INIT	PRIOR	PR_SD	PR_type	PHASE	env-var	use_dev	dev_mnyr	dev_mxyr	dev_PH	Block	Blk_Fxn # parm_name
-  3	8	     6.5	0	0	0	  1	0	0	0	0	0	0	0	#_SR_LN(R0)  
-0.2	1	0.691516	0	0	0	 -2	0	0	0	0	0	0	0	#_SR_BH_steep
-  0	2	0.502706	0	0	0	 -4	0	0	0	0	0	0	0	#_SR_sigmaR  
- -5	5	       0	0	0	0	 -4	0	0	0	0	0	0	0	#_SR_regime  
-  0	0	       0	0	0	0	-99	0	0	0	0	0	0	0	#_SR_autocorr
+0.01	5	    1.07	0	0	0	  1	0	0	0	0	0	0	0	#_SR_LN(R0)  
+ 0.2	1	0.717591	0	0	0	 -2	0	0	0	0	0	0	0	#_SR_BH_steep
+   0	2	0.448452	0	0	0	 -4	0	0	0	0	0	0	0	#_SR_sigmaR  
+  -5	5	       0	0	0	0	 -4	0	0	0	0	0	0	0	#_SR_regime  
+   0	0	       0	0	0	0	-99	0	0	0	0	0	0	0	#_SR_autocorr
 #_no timevary SR parameters
 0 #do_recdev:  0=none; 1=devvector (R=F(SSB)+dev); 2=deviations (R=F(SSB)+dev); 3=deviations (R=R0*dev; dev2=R-f(SSB)); 4=like 3 with sum(dev2) adding penalty
 1971 # first year of main recr_devs; early devs can preceed this era
@@ -112,9 +112,7 @@
 2.9 # max F or harvest rate, depends on F_Method
 4 # N iterations for tuning F in hybrid method (recommend 3 to 7)
 #
-#_initial_F_parms
-#_LO	HI	INIT	PRIOR	PR_SD	PR_type	PHASE
-0	0.6	0.1	0	0	0	1	#_1
+#_initial_F_parms; count = 0
 #
 #_Q_setup for fleets with cpue or survey data
 #_fleet	link	link_info	extra_se	biasadj	float  #  fleetname
@@ -122,8 +120,8 @@
 -9999	0	0	0	0	0	#_terminator
 #_Q_parms(if_any);Qunits_are_ln(q)
 #_LO	HI	INIT	PRIOR	PR_SD	PR_type	PHASE	env-var	use_dev	dev_mnyr	dev_mxyr	dev_PH	Block	Blk_Fxn  #  parm_name
--4	2	-1.5	0	0	0	 1	0	0	0	0	0	0	0	#_LnQ_base        
- 0	2	   0	0	0	0	-1	0	0	0	0	0	0	0	#_LnQ_base_extraSE
+-5	3	-2	0	0	0	 1	0	0	0	0	0	0	0	#_LnQ_base        
+ 0	2	 0	0	0	0	-1	0	0	0	0	0	0	0	#_LnQ_base_extraSE
 #_no timevary Q parameters
 #
 #_size_selex_patterns
@@ -136,12 +134,12 @@
 #
 #_SizeSelex
 #_LO	HI	INIT	PRIOR	PR_SD	PR_type	PHASE	env-var	use_dev	dev_mnyr	dev_mxyr	dev_PH	Block	Blk_Fxn  #  parm_name
-20	24	22	  50	0	0	1	0	0	0	0	0	0	0	#_1
- 2	 4	 3	-1.7	0	0	1	0	0	0	0	0	0	0	#_2
+20	55	39.6	0	0	0	2	0	0	0	0	0	0	0	#_1
+ 5	30	12.6	0	0	0	2	0	0	0	0	0	0	0	#_2
 #_AgeSelex
 #_No age_selex_parm
 #_Dirichlet parameters
--5	6	-1	0	1.816	6	2	0	0	0	0	0	0	0	#_Dirichlet_Theta
+-5	10	0	0	1.816	6	2	0	0	0	0	0	0	0	#_Dirichlet_Theta
 #_no timevary selex parameters
 #
 0 #  use 2D_AR1 selectivity(0/1):  experimental feature
