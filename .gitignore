@@ -41,3 +41,41 @@ vignettes/*.pdf
 
 #Data folder
 Data/*
+
+# SS files 
+*.sso
+*.b01
+*.b02
+*.b03
+*.b04
+*.b05
+*.b06
+*.bar
+gradient.dat
+gradient.3
+gradient.4
+gradient.5
+gradient.6
+*.p01
+*.p02
+*.p03
+*.p04
+*.p05
+*.p06
+*.par
+*.r01
+*.r02
+*.r03
+*.r04
+*.r05
+*.r06
+runnumber.ss
+*.ss_new
+*.xlsm
+*.cov
+*.dep
+*.hes
+*.cor
+*.eva
+*.std
+*.tmp
