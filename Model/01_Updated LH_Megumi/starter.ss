@@ -28,7 +28,7 @@ control.ss #_ctlfile
 1 #_depl_denom_frac
 4 #_SPR_basis
 4 #_F_report_units
-5 38 #_F_age_range
+5 30 #_F_age_range
 0 #_F_report_basis
 0 #_MCMC_output_detail
 0 #_ALK_tolerance
