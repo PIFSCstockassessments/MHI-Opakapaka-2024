@@ -8,16 +8,46 @@ main_dir <- this.path::here(..=1)
 #   select(SCIENTIFIC_NAME,SPECIES,SPECIES_ID,LW_A,LW_B,BINWIDTH)
 
 BFISH.LENGTHS <- fread(file.path(main_dir,"Data", "paka_catch_2016_2022.csv")) %>% 
-  filter(SPECIES_CD == "PRFI" & !is.na(LENGTH_CM)) %>% 
+  filter(SPECIES_CD == "PRFI" & LENGTH_CM >= 29) %>% #filter for fish at 29cm or above bc that was done for index standardization (29cm = size limit)
   select(c(YEAR, SAMPLE_ID, LENGTH_CM)) %>% 
-  mutate(YEAR = as.numeric(YEAR)+1)
+  mutate(YEAR = as.numeric(YEAR)+1,
+         GROUP = "RESFISH")
+
+CAM.LENGTHS <- read.csv(file.path(main_dir, "Data", "2022_CAM_LENGTHS.csv")) %>% 
+  filter(SPECIES_CD == "PRFI" & MEAN_MM >= 290) %>%
+  separate(col = BFISH, into = c("BFISH", "YEAR", "Seas")) %>% 
+  mutate(LENGTH_CM = MEAN_MM/10,
+         GROUP = "CAM",
+         YEAR = as.numeric(YEAR) + 1) %>% 
+  select(YEAR, DROP_CD, LENGTH_CM, GROUP)
+
+
+psu <- read.csv(file.path(main_dir, "Data", "2022_CAM_SAMPLE_TIME.csv")) 
+
+N.samp.cam <- CAM.LENGTHS %>% merge(psu, by = "DROP_CD") %>% 
+  select(PSU, DROP_CD, YEAR, LENGTH_CM, GROUP) %>% 
+  group_by(YEAR) %>% 
+  summarise(Nsamp_cam = length(unique(PSU))) #effN is aggregated to the number of unique PSU sampling areas per year
+
+N.samp.fishing <- BFISH.LENGTHS %>% 
+  group_by(YEAR) %>% 
+  summarise(Nsamp_fishing = length(unique(SAMPLE_ID))) #SAMPLE_ID is already aggregated at PSU level
+
+Neff <- N.samp.cam$Nsamp_cam + N.samp.fishing$Nsamp_fishing
+
+#Compare length comps for camera and fishing
+bind_rows(BFISH.LENGTHS, CAM.LENGTHS) %>% 
+  select(-c(SAMPLE_ID, DROP_CD)) %>% 
+  ggplot(aes(x = LENGTH_CM, y = after_stat(density), group = GROUP, color = GROUP)) +
+  geom_freqpoly() +
+  theme_classic()
 
 CATCH <- read.csv(file.path(main_dir, "Data", "Opakapaka_catch.csv")) %>% 
   pivot_longer(cols = -Year, names_to = "fleet_name", values_to = "catch") %>% 
   mutate(catch = catch/1000000) %>% 
   filter(Year > 1948) %>% 
   mutate(seas = 1,
-         fleet = ifelse(fleet_name == "Commercial",1,2), 
+         fleet = ifelse(fleet_name == "Commercial",2,3), 
          catch_se = .01) %>% 
   rename(year = Year) %>% 
   select(year, seas, fleet, catch, catch_se) %>% 
@@ -25,8 +55,8 @@ CATCH <- read.csv(file.path(main_dir, "Data", "Opakapaka_catch.csv")) %>%
 
 CATCH %>% group_by(fleet) %>% slice_tail(n = 3) %>% summarise(mean(catch))  #0.0677, 0.0700
 
-initcatch <- data.frame(year = c(-999,-999), seas = c(1,1), fleet = c(1,2), catch = c(0,0), catch_se = c(0.01,0.01))
-catch23 <- data.frame(year = c(2023,2023), seas = c(1,1), fleet = c(1,2), catch = c(0.0677,0.0700), catch_se = c(0.01,0.01))
+initcatch <- data.frame(year = c(-999,-999), seas = c(1,1), fleet = c(2,3), catch = c(0,0), catch_se = c(0.01,0.01))
+catch23 <- data.frame(year = c(2023,2023), seas = c(1,1), fleet = c(2,3), catch = c(0.0677,0.0700), catch_se = c(0.01,0.01))
 CATCH <- bind_rows(initcatch, CATCH, catch23) %>% arrange(fleet, year)
   
 
@@ -35,7 +65,7 @@ bfish_cpue <-read.csv(file.path(main_dir, "Data", "BFISH_index.csv")) %>%
   filter(str_detect(category, "PRFI")) %>% 
   dplyr::select(c(time, estimate, cv)) %>% 
   mutate(seas = 7,
-         index = 3,
+         index = 1,
          time = time+1) %>% 
   rename(yr = time,
          obs = estimate, 
@@ -44,19 +74,19 @@ bfish_cpue <-read.csv(file.path(main_dir, "Data", "BFISH_index.csv")) %>%
 
 CPUE <- read.csv(file.path(main_dir, "Data", "opakapaka_FRS.csv")) %>% 
   mutate(seas = 7,
-         index = 1) %>% 
+         index = 2) %>% 
   mutate(obs_log = stderr/obs) %>% 
   select(yr, seas, index, obs, obs_log) %>% 
   bind_rows(bfish_cpue) %>% 
-  filter(yr > 1948)
+  filter(yr > 1948) %>% 
+  arrange(index, yr)
 
 # Length comps
-BFISH.LENGTHS %>% ggplot() + geom_histogram(aes(LENGTH_CM), binwidth = 2) + facet_wrap(~YEAR, scales = "free")
-BFISH.LENGTHS %>% group_by(YEAR) %>% summarise(N =n()) #want to combine 2019 and 2020 into superperiod bc sample sizes are 30 and 39 respectively 
 BIN_SIZE = 5
-BFISH.LENGTHS$LENGTH_BIN_START <- BFISH.LENGTHS$LENGTH_CM-(BFISH.LENGTHS$LENGTH_CM%%BIN_SIZE)
-lencomp <- BFISH.LENGTHS %>% 
-  select(-SAMPLE_ID) %>% 
+bfish_len <- bind_rows(BFISH.LENGTHS, CAM.LENGTHS) %>% 
+  select(-c(SAMPLE_ID, DROP_CD)) 
+bfish_len$LENGTH_BIN_START <- bfish_len$LENGTH_CM-(bfish_len$LENGTH_CM%%BIN_SIZE)
+lencomp <- bfish_len %>% 
   group_by(YEAR, LENGTH_BIN_START) %>% 
   summarise(Nsamp = n()) %>% 
   mutate(LENGTH_BIN_START = paste0("l", LENGTH_BIN_START)) %>% 
@@ -64,12 +94,12 @@ lencomp <- BFISH.LENGTHS %>%
   ungroup() %>% 
   mutate(Yr = YEAR, 
          Seas = 1, 
-         FltSvy = 3, 
+         FltSvy = 1, 
          Gender = 0, 
          Part = 0,
-         Seas = ifelse(Yr == 2019|Yr == 2020, -1, 1),
-         FltSvy = ifelse(Yr == 2020, -3, 3),
-         Nsamp = rowSums(select(., starts_with("l")))) %>% 
+         Seas = ifelse(Yr == 2020|Yr == 2021, -1, 1),
+         FltSvy = ifelse(Yr == 2021, -1, 1),
+         Nsamp = Neff) %>% 
   select(Yr, Seas, FltSvy, Gender, Part, Nsamp, starts_with("l"))
 
 ## Writing data to data.ss file
@@ -78,15 +108,15 @@ data$Nfleets <- 3
 data$styr <- 1949
 data$endyr <- 2023
 data$catch <- CATCH 
-data$fleetinfo <- data.frame(type = c(1,1,3), surveytiming = c(-1,-1,1), area = c(1,1,1),
+data$fleetinfo <- data.frame(type = c(3,1,1), surveytiming = c(1,-1,-1), area = c(1,1,1),
                              units = c(1,1,1), need_catch_mult = c(0,0,0), 
-                             fleetname = c("FRS", "Non_comm", "BFISH"))
+                             fleetname = c("BFISH", "FRS", "Non_comm"))
 data$CPUE <- CPUE
 data$CPUEinfo <- data.frame(Fleet = c(1,2,3), Units =c(1,1,1), Errtype = c(0,0,0), SD_Report = c(0,0,0))
 
 
 data$lencomp <- as.data.frame(lencomp)
-data$lbin_vector <- sort(unique(BFISH.LENGTHS$LENGTH_BIN_START))
+data$lbin_vector <- sort(unique(bfish_len$LENGTH_BIN_START))
 data$N_lbins <- length(data$lbin_vector)
 data$len_info <- data.frame(
   mintailcomp = rep(-1, 3),
