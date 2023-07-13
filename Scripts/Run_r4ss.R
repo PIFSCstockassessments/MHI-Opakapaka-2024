@@ -1,6 +1,6 @@
 require(r4ss); require(this.path)
 
-dir <- file.path(this.path::here(.. = 1), "SS3 models","LERU","201_VulnBio")
+dir <- file.path(this.path::here(.. = 1), "Model","01_Updated LH")
 
 
 report <- r4ss::SS_output(dir,verbose = FALSE, printstats = FALSE)

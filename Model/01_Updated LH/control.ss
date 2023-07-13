@@ -117,7 +117,7 @@
 #_Q_setup for fleets with cpue or survey data
 #_fleet	link	link_info	extra_se	biasadj	float  #  fleetname
     1	1	0	1	0	0	#_1         
-    3	1	0	0	0	0	#_3         
+    2	1	0	0	0	0	#_2         
 -9999	0	0	0	0	0	#_terminator
 #_Q_parms(if_any);Qunits_are_ln(q)
 #_LO	HI	INIT	PRIOR	PR_SD	PR_type	PHASE	env-var	use_dev	dev_mnyr	dev_mxyr	dev_PH	Block	Blk_Fxn  #  parm_name
@@ -128,9 +128,9 @@
 #
 #_size_selex_patterns
 #_Pattern	Discard	Male	Special
-0	0	0	0	#_1 1
-0	0	0	0	#_1 2
-1	0	0	0	#_1 3
+1 0 0 0 #_1 3 BFISH size comps
+5	0	0	1	#_1 1 FRS - mirror from BFISH
+5	0	0	1	#_1 2 Non_comm - mirror from BFISH
 #_age_selex_patterns
 #_Pattern	Discard	Male	Special
 0	0	0	0	#_1 1
@@ -140,8 +140,16 @@
 #_SizeSelex
 #_LO	HI	INIT	PRIOR	PR_SD	PR_type	PHASE	env-var	use_dev	dev_mnyr	dev_mxyr	dev_PH	Block	Blk_Fxn  #  parm_name
 #BFISH LenSelex
-1	45	10	0	0	0	2	0	0	0	0	0	0	0	#_1
-1	20	11	0	0	0	2	0	0	0	0	0	0	0	#_2
+1 45  10  0 0 0 2 0 0 0 0 0 0 0 #_1
+1 20  11  0 0 0 2 0 0 0 0 0 0 0 #_2
+#FRS LenSelex
+            -1            -1            -1            -1            99             0        -99          0          0          0          0          0          0          0  #  SizeSel_P1_SURVEY2(2)
+            -1            -1            -1            -1            99             0        -99          0          0          0          0          0          0          0  #  SizeSel_P2_SURVEY2(2)
+#
+#Non-comm LenSelex
+            -1            -1            -1            -1            99             0        -99          0          0          0          0          0          0          0  #  SizeSel_P1_SURVEY2(2)
+            -1            -1            -1            -1            99             0        -99          0          0          0          0          0          0          0  #  SizeSel_P2_SURVEY2(2)
+#
 #
 #_AgeSelex
 #_No age_selex_parm
