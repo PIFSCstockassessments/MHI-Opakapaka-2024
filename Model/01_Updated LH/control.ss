@@ -166,6 +166,8 @@
 #
 # Input variance adjustments factors: 
 #_Data_type Fleet Value
+1 1 0.0882175	
+1 2 0.1535330
 -9999 1 0 # terminator
 #
 5 #_maxlambdaphase
