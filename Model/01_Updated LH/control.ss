@@ -35,7 +35,7 @@
 0 #_natM_type:_0=1Parm; 1=N_breakpoints;_2=Lorenzen;_3=agespecific;_4=agespec_withseasinterpolate;_5=Maunder_M;_6=Age-range_Lorenzen
 #_no additional input for selected M option; read 1P per morph
 1 # GrowthModel: 1=vonBert with L1&L2; 2=Richards with L1&L2; 3=age_specific_K_incr; 4=age_specific_K_decr;5=age_specific_K_each; 6=NA; 7=NA; 8=growth cessation
-2 #_Age(post-settlement)_for_L1;linear growth below this
+0 #_Age(post-settlement)_for_L1;linear growth below this
 999 #_Growth_Age_for_L2 (999 to use as Linf)
 -999 #_exponential decay for growth above maxage (value should approx initial Z; -999 replicates 3.24; -998 to not allow growth above maxage)
 0 #_placeholder for future growth feature
@@ -50,16 +50,16 @@
 #
 #_growth_parms
 #_LO	HI	INIT	PRIOR	PR_SD	PR_type	PHASE	env_var&link	dev_link	dev_minyr	dev_maxyr	dev_PH	Block	Block_Fxn
-    0	      2	    0.12	  0	  0	0	 -3	0	0	0	0	0	0	0	#_NatM_p_1_Fem_GP_1        
-   10	     60	      34	  0	  0	0	 -4	0	0	0	0	0	0	0	#_L_at_Amin_Fem_GP_1       
+    0	      2	    0.135	  0	  0	0	 -3	0	0	0	0	0	0	0	#_NatM_p_1_Fem_GP_1        
+   1	     60	       6	  0	  0	0	 -4	0	0	0	0	0	0	0	#_L_at_Amin_Fem_GP_1       
    50	    100	    67.5	  0	  0	0	 -4	0	0	0	0	0	0	0	#_L_at_Amax_Fem_GP_1       
  0.05	    0.5	    0.242	  0	  0	0	 -3	0	0	0	0	0	0	0	#_VonBert_K_Fem_GP_1       
- 0.05	   0.25	    0.09	  0	  0	0	 -3	0	0	0	0	0	0	0	#_CV_young_Fem_GP_1        
- 0.05	   0.25	    0.09	  0	  0	0	 -3	0	0	0	0	0	0	0	#_CV_old_Fem_GP_1          
-   -1	      3	2.25e-05	  0	  0	0	 -3	0	0	0	0	0	0	0	#_Wtlen_1_Fem_GP_1         
-   -1	      4	    2.93	  0	  0	0	 -3	0	0	0	0	0	0	0	#_Wtlen_2_Fem_GP_1         
+ 0.05	   0.25	    0.065	  0	  0	0	 -3	0	0	0	0	0	0	0	#_CV_young_Fem_GP_1        
+ 0.05	   0.25	    0.065	  0	  0	0	 -3	0	0	0	0	0	0	0	#_CV_old_Fem_GP_1          
+   -1	      3	1.75e-05	  0	  0	0	 -3	0	0	0	0	0	0	0	#_Wtlen_1_Fem_GP_1         
+   -1	      4	    2.99	  0	  0	0	 -3	0	0	0	0	0	0	0	#_Wtlen_2_Fem_GP_1         
    35	     60	    40.7	  0	  0	0	 -3	0	0	0	0	0	0	0	#_Mat50%_Fem_GP_2          
-   -4	      3	   -3.44	  0	  0	0	 -3	0	0	0	0	0	0	0	#_Mat_slope_Fem_GP_1       
+   -4	      3	   -2.26	  0	  0	0	 -3	0	0	0	0	0	0	0	#_Mat_slope_Fem_GP_1       
    -3	      3	       1	  0	  0	0	 -3	0	0	0	0	0	0	0	#_Eggs/kg_inter_Fem_GP_1   
    -3	      3	       0	  0	  0	0	 -3	0	0	0	0	0	0	0	#_Eggs/kg_slope_wt_Fem_GP_1
   0.1	     10	       1	  1	  1	0	 -1	0	0	0	0	0	0	0	#_CohortGrowDev            
@@ -76,8 +76,8 @@
 0 # future feature: 0/1 to make realized sigmaR a function of SR curvature
 #_LO	HI	INIT	PRIOR	PR_SD	PR_type	PHASE	env-var	use_dev	dev_mnyr	dev_mxyr	dev_PH	Block	Blk_Fxn # parm_name
 0.01	2	0.85	0	0	0	  1	0	0	0	0	0	0	0	#_SR_LN(R0)  
- 0.2	1	0.756	0	0	0	 -2	0	0	0	0	0	0	0	#_SR_BH_steep
-   0	2	0.39	0	0	0	 -4	0	0	0	0	0	0	0	#_SR_sigmaR  
+ 0.2	1	0.76	0	0	0	 -2	0	0	0	0	0	0	0	#_SR_BH_steep
+   0	2	0.52	0	0	0	 -4	0	0	0	0	0	0	0	#_SR_sigmaR  
   -5	5	   0	0	0	0	 -4	0	0	0	0	0	0	0	#_SR_regime  
    0	0	   0	0	0	0	-99	0	0	0	0	0	0	0	#_SR_autocorr
 #_no timevary SR parameters
