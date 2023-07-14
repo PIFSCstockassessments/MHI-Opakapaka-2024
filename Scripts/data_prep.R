@@ -72,7 +72,7 @@ bfish_cpue <-read.csv(file.path(main_dir, "Data", "BFISH_index.csv")) %>%
          obs_log = cv) %>% 
   select(yr, seas, index, obs, obs_log)
 
-CPUE <- read.csv(file.path(main_dir, "Data", "opakapaka_FRS.csv")) %>% 
+CPUE <- read.csv(file.path(main_dir, "Data", "opakapaka_FRS_cpue.csv")) %>% 
   mutate(seas = 7,
          index = 2) %>% 
   mutate(obs_log = stderr/obs) %>% 

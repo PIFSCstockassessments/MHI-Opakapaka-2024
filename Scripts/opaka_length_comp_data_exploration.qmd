@@ -1,0 +1,415 @@
+---
+title: "Opaka Length Comp Data"
+format: html
+editor: visual
+---
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+library("tidyverse")
+
+```
+
+Read in data sets:
+
+-   paka_catch_2016_2022.csv (BFISH research fishing)\
+-   2022_CAM_LENGTHS.csv (BFISH camera)\
+-   2022_CAM_SAMPLE_TIME.csv (PSUs for camera data)\
+-   PICDR-113273 HDAR Commercial Catch Calendar Year 1948 to Fiscal Year 1993.csv (FRS early period)\
+-   PICDR-113273 HDAR Commercial Catch Fiscal Year 1994 to 2022-10-26.csv (FRS late period)
+
+```{r}
+#| code-fold: true
+#| cache: true
+FISH.LENGTHS <- read.csv(file.path("..","Data", "paka_catch_2016_2022.csv")) %>% 
+  filter(SPECIES_CD == "PRFI" & !is.na(LENGTH_CM)) %>% #filter for fish at 29cm or above bc that was done for index standardization (29cm = size limit)
+  select(c(YEAR, SAMPLE_ID, LENGTH_CM)) %>% 
+  mutate(YEAR = as.numeric(YEAR)+1,
+         GROUP = "RESFISH")
+
+CAM.LENGTHS <- read.csv(file.path("..", "Data", "2022_CAM_LENGTHS.csv")) %>% 
+  filter(SPECIES_CD == "PRFI" & !is.na(MEAN_MM)) %>%
+  separate(col = BFISH, into = c("BFISH", "YEAR", "Seas")) %>% 
+  mutate(LENGTH_CM = MEAN_MM/10,
+         GROUP = "CAM",
+         YEAR = as.numeric(YEAR) + 1) %>% 
+  select(YEAR, DROP_CD, LENGTH_CM, GROUP)
+
+
+psu <- read.csv(file.path("..", "Data", "2022_CAM_SAMPLE_TIME.csv")) 
+
+FRS.LENGTHS_early <- read.csv(file.path("..", "Data", "PICDR-113273 HDAR Commercial Catch Calendar Year 1948 to Fiscal Year 1993.csv")) %>% 
+  filter(SPECIES == 19)
+FRS.LENGTHS_late <- read.csv(file.path("..", "Data", "PICDR-113273 HDAR Commercial Catch Fiscal Year 1994 to 2022-10-26.csv")) %>% 
+  filter(SPECIES == 19)
+FRS.LENGTHS <- rbind(FRS.LENGTHS_early, FRS.LENGTHS_late)
+```
+
+## BFISH Length Comp
+
+### Research Fishing
+
+```{r}
+#| code-fold: true
+FISH.LENGTHS %>% 
+  ggplot(aes(x = LENGTH_CM)) + 
+  geom_density() +
+  geom_vline(xintercept = 29) +
+  geom_vline(xintercept = 10) +
+  theme_classic() +
+  labs(caption = "Vertical line at 29cm indicates cutoff for observations used in BFISH index")
+
+FISH.LENGTHS %>% 
+  filter(LENGTH_CM >= 29) %>% 
+  ggplot(aes(x = LENGTH_CM)) + 
+  geom_density() +
+  geom_vline(xintercept = 29) +
+  theme_classic() +
+  labs(subtitle = "29 cm or greater individuals")
+```
+
+## Camera
+
+```{r}
+#| code-fold: true
+CAM.LENGTHS %>% 
+  ggplot(aes(x = LENGTH_CM)) + 
+  geom_density() +
+  geom_vline(xintercept = 29) +
+  theme_classic() +
+  labs(caption = "Vertical line at 29cm indicates cutoff for observations used in BFISH index")
+
+CAM.LENGTHS %>% 
+  filter(LENGTH_CM >= 29) %>% 
+  ggplot(aes(x = LENGTH_CM)) + 
+  geom_density() +
+  geom_vline(xintercept = 29) +
+  theme_classic() +
+  labs(subtitle = "29 cm or greater individuals")
+```
+
+```{r}
+#| code-fold: true
+bind_rows(CAM.LENGTHS, FISH.LENGTHS) %>% 
+  ggplot(aes(x = LENGTH_CM)) +
+  geom_density(aes(group = GROUP, color = GROUP)) +
+  geom_density() +
+  geom_vline(xintercept = 29) +
+  theme_classic() +
+  labs(caption = "Vertical line at 29cm indicates cutoff for observations used in BFISH index")
+
+bind_rows(CAM.LENGTHS, FISH.LENGTHS) %>% 
+  filter(LENGTH_CM >= 29) %>% 
+  ggplot(aes(x = LENGTH_CM)) +
+  geom_density(aes(group = GROUP, color = GROUP)) +
+  geom_density() +
+  geom_vline(xintercept = 29) +
+  theme_classic() +
+  labs(caption = "Vertical line at 29cm indicates cutoff for observations used in BFISH index")
+
+```
+
+## FRS
+
+The length-weight relationship is defined as L=(W/a)\^(1/b) where a = 1.75e-05 and b = 2.99. For records with 1 fish caught the min and max weights and lengths were:
+
+```{r}
+#| code-fold: true
+FRS.LENGTHS %>% 
+  filter(FYEAR >= 1949) %>% 
+  filter(CAUGHT == 1) %>%
+  mutate(kg = (LBS *0.45359237),
+    L = (kg/1.75e-05)^(1/2.99)) %>% 
+  summarise(min_lbs = min(LBS),
+            max_lbs = max(LBS),
+            min_cm = min(L),
+            max_cm = max(L))
+
+FRS_1 <- FRS.LENGTHS %>% 
+  filter(FYEAR >= 1949) %>% 
+  filter(CAUGHT == 1 & LBS <= 21) %>% 
+  mutate(kg = (LBS *0.45359237),
+    L = (kg/1.75e-05)^(1/2.99)) %>%
+  mutate(YEAR = FYEAR, 
+         LENGTH_CM = L,
+         GROUP = "FRS") 
+
+```
+
+The Hawaii state record for Opaka is 21 lbs so I removed all records of 1 fish with a weight greater than 21lbs.
+
+```{r}
+#| code-fold: true
+
+FRS_1 %>% 
+  ggplot(aes(x = LBS)) +
+  geom_histogram(aes(y =after_stat(density)), binwidth = 1, fill = "grey60", color = 'black') +
+  geom_density() +
+  theme_classic() +
+  labs(title = "FRS weight (lbs) distribution")
+
+FRS_1 %>% 
+  ggplot(aes(x = L)) +
+  geom_histogram(aes(y =after_stat(density)), binwidth = 2, fill = "grey60", color = 'black') +
+  geom_density() + 
+  geom_vline(xintercept = 29) +
+  theme_classic() +
+  labs(title = "FRS length (cm) distributions", caption = "length converted from weights using L-W relationship")
+# 
+# getMode <- function(x) {
+# keys <- unique(x)
+# keys[which.max(tabulate(match(x, keys)))]
+# }
+# 
+# FRS.LENGTHS %>% 
+#   filter(FYEAR >= 1949) %>% 
+#   filter(CAUGHT == 1 & LBS <= 21) %>% 
+#   mutate(kg = (LBS *0.45359237),
+#     L = (kg/1.75e-05)^(1/2.99)) %>% 
+#   select(FYEAR, LBS, kg, L) %>% 
+#   filter(L < 29)
+#   summarise(mode_lbs = getMode(LBS),
+#             mode_L = getMode(L))
+
+
+
+```
+
+## Comparing BFISH and FRS
+
+```{r}
+#| code-fold: true
+
+bfish <- bind_rows(CAM.LENGTHS, FISH.LENGTHS) %>% 
+  select(-c(DROP_CD, SAMPLE_ID)) %>% 
+  filter(LENGTH_CM >= 29)
+
+FRS_1 %>% 
+  select(YEAR, LENGTH_CM, GROUP) %>%
+  bind_rows(bfish) %>% 
+  ggplot(aes(x = LENGTH_CM)) +
+  geom_density(aes(group = GROUP, fill = GROUP, color = GROUP), alpha = .5) +
+  geom_vline(xintercept = 28) +
+  theme_classic()
+  
+FRS_1 %>% 
+  select(YEAR, LENGTH_CM, GROUP) %>%
+  ggplot(aes(x = LENGTH_CM)) +
+  geom_density(color = NA, fill = "orange", alpha = .5) +
+  geom_density(data = bfish, aes(x = LENGTH_CM), color = NA, fill = "lightblue", alpha = .75) +
+  geom_vline(xintercept = 29) +
+  scale_x_continuous(breaks = seq(25,95,by=4)) +
+  theme_classic() +
+  labs(caption = "orange is FRS, blue is BFISH (fishing and camera combined)")
+
+
+```
+
+## Mean Lengths
+
+```{r}
+#| code-fold: true
+bfish %>% 
+  group_by(GROUP, YEAR) %>% 
+  summarise(mean_len = mean(LENGTH_CM),
+            sd = sd(LENGTH_CM)) %>% 
+  ggplot(aes(x = YEAR)) +
+  geom_point(aes(y = mean_len, group = GROUP, color = GROUP)) +
+  geom_errorbar(aes(ymin = mean_len - sd, ymax = mean_len + sd, group = GROUP, color = GROUP)) +
+  theme_classic()
+
+FRS_1%>% 
+  bind_rows(bfish) %>% 
+  select(YEAR, LENGTH_CM, GROUP) %>% 
+  group_by(GROUP, YEAR) %>% 
+  summarise(mean_len = mean(LENGTH_CM),
+            sd = sd(LENGTH_CM)) %>% 
+  ggplot(aes(x = YEAR)) +
+  geom_point(aes(y = mean_len, group = GROUP, color = GROUP)) +
+  geom_errorbar(aes(ymin = mean_len - sd, ymax = mean_len + sd, group = GROUP, color = GROUP)) +
+  theme_classic()
+
+FRS_1 %>% 
+  bind_rows(bfish) %>% 
+  select(YEAR, LENGTH_CM, GROUP) %>% 
+  group_by(GROUP, YEAR) %>% 
+  summarise(mean_len = mean(LENGTH_CM),
+            sd = sd(LENGTH_CM)) %>% 
+  filter(YEAR > 2016) %>% 
+  ggplot(aes(x = YEAR)) +
+  geom_point(aes(y = mean_len, group = GROUP, color = GROUP)) +
+  geom_errorbar(aes(ymin = mean_len - sd, ymax = mean_len + sd, group = GROUP, color = GROUP)) +
+  theme_classic()
+  
+
+FRS_1 %>% 
+  bind_rows(bfish) %>% 
+  mutate(GROUP = ifelse(GROUP == "FRS", "FRS", "BFISH"),
+         GROUP = factor(GROUP, levels = c("FRS", "BFISH"))) %>% 
+  select(YEAR, LENGTH_CM, GROUP) %>% 
+  group_by(GROUP, YEAR) %>% 
+  summarise(mean_len = mean(LENGTH_CM),
+            sd = sd(LENGTH_CM)) %>% 
+  filter(YEAR > 2016) %>% 
+  ggplot(aes(x = YEAR)) +
+  geom_point(aes(y = mean_len, group = GROUP, color = GROUP)) +
+  geom_errorbar(aes(ymin = mean_len - sd, ymax = mean_len + sd, group = GROUP, color = GROUP)) +
+  theme_classic() +
+  labs(caption = "BFISH is camera and fishing combined")
+
+```
+
+### Mean lengths for FRS with more than 1 fish  
+
+I applied some filtering rules:
+
+-   CAUGHT was \>= 1
+
+-   LBS was \<= CAUGHT \* 21
+
+```{r}
+#| code-fold: true
+FRS_5 <- FRS.LENGTHS %>% 
+  filter(FYEAR >= 1949) %>% 
+  filter(CAUGHT <= 5 & CAUGHT >= 1) %>% 
+  filter(LBS <= CAUGHT * 21) %>% 
+  mutate(mean_lbs = LBS/CAUGHT) %>% 
+  select(FYEAR, CAUGHT, LBS, mean_lbs) %>% 
+  mutate(kg = (mean_lbs *0.45359237),
+    L = (kg/1.75e-05)^(1/2.99),
+    Num_group = as.factor(5)) 
+
+FRS_5 <-  as.data.frame(lapply(FRS_5, rep, FRS_5$CAUGHT))
+
+FRS_10 <- FRS.LENGTHS %>% 
+  filter(FYEAR >= 1949) %>% 
+  filter(CAUGHT <= 10 & CAUGHT >= 1) %>% 
+  filter(LBS <= CAUGHT * 21) %>% 
+  mutate(mean_lbs = LBS/CAUGHT) %>% 
+  select(FYEAR, CAUGHT, LBS, mean_lbs) %>% 
+  mutate(kg = (mean_lbs *0.45359237),
+    L = (kg/1.75e-05)^(1/2.99),
+    Num_group = as.factor(10)) 
+
+FRS_10 <-  as.data.frame(lapply(FRS_10, rep, FRS_10$CAUGHT))
+
+FRS_all <- FRS.LENGTHS %>% 
+  filter(FYEAR >= 1949) %>% 
+  filter(CAUGHT >= 1 & CAUGHT < 1000 & LBS > 0) %>% #remove one instance of 50,143 caught in one trip with 192 lbs
+  filter(LBS <= CAUGHT * 21) %>% 
+  mutate(mean_lbs = LBS/CAUGHT) %>% 
+  select(FYEAR, CAUGHT, LBS, mean_lbs) %>% 
+  mutate(kg = (mean_lbs *0.45359237),
+    L = (kg/1.75e-05)^(1/2.99),
+    Num_group = as.factor("all")) 
+FRS_all <-  as.data.frame(lapply(FRS_all, rep, FRS_all$CAUGHT))
+
+FRS_1 %>% 
+  mutate(mean_lbs = LBS/CAUGHT,
+    Num_group = as.factor(1),
+    L = LENGTH_CM) %>% 
+  select(FYEAR, CAUGHT, LBS, mean_lbs, kg, L, Num_group) %>% 
+  bind_rows(FRS_5) %>% 
+  bind_rows(FRS_10) %>% 
+  mutate(YEAR = FYEAR, 
+         LENGTH_CM = L,
+         GROUP = paste0("FRS_", Num_group),
+         GROUP = factor(GROUP, levels = c("FRS_1", "FRS_5", "FRS_10"))) %>% 
+  ggplot(aes(x = CAUGHT, y = mean_lbs, color = GROUP)) +
+  geom_point() +
+  facet_wrap(~GROUP, nrow = 3) +
+  scale_x_continuous(breaks = seq(1,10,by=1), labels = seq(1,10,by=1)) +
+  theme_classic()
+  
+
+
+```
+
+Comparing mean lengths for FRS filtered at different levels. For trips with 1 individual, the mean length is consistently higher than for trips where more than 1 individual were included and average weights were used.
+
+```{r}
+#| code-fold: true
+
+FRS_1 %>% 
+  mutate(mean_lbs = LBS/CAUGHT,
+    Num_group = as.factor(1),
+    L = LENGTH_CM) %>% 
+  select(FYEAR, CAUGHT, LBS, mean_lbs, kg, L, Num_group) %>% 
+  bind_rows(FRS_5) %>% 
+  bind_rows(FRS_10) %>% 
+  bind_rows(FRS_all) %>% 
+  mutate(YEAR = FYEAR, 
+         LENGTH_CM = L,
+         GROUP = "FRS") %>% 
+  select(YEAR, LENGTH_CM, Num_group) %>% 
+  group_by(Num_group, YEAR) %>% 
+  summarise(mean_len = mean(LENGTH_CM),
+            sd_len = sd(LENGTH_CM)) %>% 
+    mutate(Num_group = factor(Num_group, levels = c("1", "5", "10", "all"))) %>% 
+  ggplot(aes(x = YEAR)) +
+  geom_point(aes(y = mean_len, group = Num_group, color = Num_group)) +
+  geom_smooth(aes(y = mean_len, group = Num_group, color = Num_group), se = F) +
+  geom_errorbar(aes(ymin = mean_len - sd_len, ymax = mean_len + sd_len,
+                    group = Num_group, color = Num_group), alpha = .5) +
+  theme_classic() 
+
+
+```
+
+When you include BFISH camera and research fishing, then research fishing mean lengths are much smaller than the others, especially in last 3 years. Camera mean lengths are closer to FRS trips with 1 or between 1 and 5 individuals.
+
+```{r}
+#| code-fold: true
+FRS_1 %>% 
+  mutate(mean_lbs = LBS/CAUGHT,
+    Num_group = as.factor(1),
+    L = LENGTH_CM) %>% 
+  select(FYEAR, CAUGHT, LBS, mean_lbs, kg, L, Num_group) %>% 
+  bind_rows(FRS_5) %>% 
+  bind_rows(FRS_10) %>% 
+  bind_rows(FRS_all) %>% 
+  mutate(YEAR = FYEAR, 
+         LENGTH_CM = L,
+         GROUP = paste0("FRS_", Num_group)) %>% 
+  select(YEAR, LENGTH_CM, GROUP) %>% 
+  bind_rows(bfish) %>%
+  mutate(GROUP = factor(GROUP, levels = c("FRS_1", "FRS_5", "FRS_10", "FRS_all", "RESFISH", "CAM"))) %>% 
+  group_by(GROUP, YEAR) %>% 
+  summarise(mean_len = mean(LENGTH_CM),
+            sd_len = sd(LENGTH_CM)) %>% 
+  filter(YEAR > 2016) %>% 
+  ggplot(aes(x = YEAR)) +
+  geom_point(aes(y = mean_len, group = GROUP, color = GROUP)) +
+  geom_smooth(aes(y = mean_len, group = GROUP, color = GROUP), se = FALSE) +
+  # geom_errorbar(aes(ymin = mean_len - sd_len, ymax = mean_len + sd_len, 
+  #                   group = GROUP, color = GROUP)) +
+  theme_classic() +
+  labs(caption = "Mean lengths fit with loess smoother")
+```
+
+Comparing FRS distributions
+
+```{r}
+#| code-fold: true
+
+FRS_1 %>% 
+  mutate(mean_lbs = LBS/CAUGHT,
+    Num_group = as.factor(1),
+    L = LENGTH_CM) %>% 
+  select(FYEAR, CAUGHT, LBS, mean_lbs, kg, L, Num_group) %>% 
+  bind_rows(FRS_5) %>% 
+  bind_rows(FRS_10) %>% 
+  bind_rows(FRS_all) %>% 
+  mutate(YEAR = FYEAR, 
+         LENGTH_CM = L,
+         GROUP = paste0("FRS_", Num_group)) %>% 
+  filter(LENGTH_CM <= 90 & LBS > 0) %>% 
+  select(YEAR, LENGTH_CM, GROUP) %>% 
+  bind_rows(bfish) %>% 
+    mutate(GROUP = factor(GROUP, levels = c("FRS_1", "FRS_5", "FRS_10", "FRS_all", "RESFISH", "CAM"))) %>% 
+  ggplot(aes(x = LENGTH_CM)) + 
+  geom_density(aes(group = GROUP, fill = GROUP), alpha = .35) +
+  theme_classic() 
+```
