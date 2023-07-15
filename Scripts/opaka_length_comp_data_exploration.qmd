@@ -68,6 +68,8 @@ FISH.LENGTHS %>%
   geom_vline(xintercept = 29) +
   theme_classic() +
   labs(subtitle = "29 cm or greater individuals")
+
+
 ```
 
 ## Camera
@@ -387,29 +389,4 @@ FRS_1 %>%
   #                   group = GROUP, color = GROUP)) +
   theme_classic() +
   labs(caption = "Mean lengths fit with loess smoother")
-```
-
-Comparing FRS distributions
-
-```{r}
-#| code-fold: true
-
-FRS_1 %>% 
-  mutate(mean_lbs = LBS/CAUGHT,
-    Num_group = as.factor(1),
-    L = LENGTH_CM) %>% 
-  select(FYEAR, CAUGHT, LBS, mean_lbs, kg, L, Num_group) %>% 
-  bind_rows(FRS_5) %>% 
-  bind_rows(FRS_10) %>% 
-  bind_rows(FRS_all) %>% 
-  mutate(YEAR = FYEAR, 
-         LENGTH_CM = L,
-         GROUP = paste0("FRS_", Num_group)) %>% 
-  filter(LENGTH_CM <= 90 & LBS > 0) %>% 
-  select(YEAR, LENGTH_CM, GROUP) %>% 
-  bind_rows(bfish) %>% 
-    mutate(GROUP = factor(GROUP, levels = c("FRS_1", "FRS_5", "FRS_10", "FRS_all", "RESFISH", "CAM"))) %>% 
-  ggplot(aes(x = LENGTH_CM)) + 
-  geom_density(aes(group = GROUP, fill = GROUP), alpha = .35) +
-  theme_classic() 
 ```
