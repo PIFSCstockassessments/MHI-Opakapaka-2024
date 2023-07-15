@@ -1,4 +1,4 @@
-pacman::p_load("this.path", "tidyverse","data.table","readxl","StepwiseLH","LBSPR", "r4ss")
+pacman::p_load("this.path", "tidyverse","data.table","readxl","r4ss")
 
 main_dir <- this.path::here(..=1)
 #LH <- read_excel(file.path(main_dir,"Data","Priors Data",paste0("Deep7_LH.xlsx"))) 
@@ -33,7 +33,20 @@ N.samp.fishing <- BFISH.LENGTHS %>%
   group_by(YEAR) %>% 
   summarise(Nsamp_fishing = length(unique(SAMPLE_ID))) #SAMPLE_ID is already aggregated at PSU level
 
-Neff <- N.samp.cam$Nsamp_cam + N.samp.fishing$Nsamp_fishing
+## TODO: Do we need to adjust input sample size (before DM adjustment?) When I plot the distributions by sample ID, there are only a few with clustering, so maybe ok for now? Double check with everyone.
+BFISH.LENGTHS %>% 
+  ggplot(aes(x = YEAR, y = LENGTH_CM, GROUP = SAMPLE_ID, color = SAMPLE_ID)) + geom_point(show.legend = FALSE)
+
+BFISH.LENGTHS %>% 
+  ggplot(aes(x = LENGTH_CM, GROUP = SAMPLE_ID)) + 
+  geom_histogram(show.legend = FALSE) + facet_wrap(~SAMPLE_ID)
+
+Neff <- N.samp.fishing$Nsamp_fishing
+
+Neff <- BFISH.LENGTHS %>% 
+  group_by(YEAR) %>% 
+  summarise(Nsamp_fishing = n()) %>% 
+  pull(Nsamp_fishing)
 
 #Compare length comps for camera and fishing
 bind_rows(BFISH.LENGTHS, CAM.LENGTHS) %>% 
@@ -75,6 +88,8 @@ bfish_cpue <-read.csv(file.path(main_dir, "Data", "BFISH_index.csv")) %>%
 CPUE <- read.csv(file.path(main_dir, "Data", "opakapaka_FRS_cpue.csv")) %>% 
   mutate(seas = 7,
          index = 2) %>% 
+  rename("obs" = "Mean_index",
+        "stderr" = "SE_index") %>% 
   mutate(obs_log = stderr/obs) %>% 
   select(yr, seas, index, obs, obs_log) %>% 
   bind_rows(bfish_cpue) %>% 
@@ -83,8 +98,9 @@ CPUE <- read.csv(file.path(main_dir, "Data", "opakapaka_FRS_cpue.csv")) %>%
 
 # Length comps
 BIN_SIZE = 5
-bfish_len <- bind_rows(BFISH.LENGTHS, CAM.LENGTHS) %>% 
-  select(-c(SAMPLE_ID, DROP_CD)) 
+# bfish_len <- bind_rows(BFISH.LENGTHS, CAM.LENGTHS) %>% 
+#   select(-c(SAMPLE_ID, DROP_CD)) 
+bfish_len <- BFISH.LENGTHS
 bfish_len$LENGTH_BIN_START <- bfish_len$LENGTH_CM-(bfish_len$LENGTH_CM%%BIN_SIZE)
 lencomp <- bfish_len %>% 
   group_by(YEAR, LENGTH_BIN_START) %>% 
@@ -97,13 +113,13 @@ lencomp <- bfish_len %>%
          FltSvy = 1, 
          Gender = 0, 
          Part = 0,
-         Seas = ifelse(Yr == 2020|Yr == 2021, -1, 1),
-         FltSvy = ifelse(Yr == 2021, -1, 1),
+         Seas = ifelse(Yr == 2019|Yr == 2020, -1, 1),
+         FltSvy = ifelse(Yr == 2020, -1, 1),
          Nsamp = Neff) %>% 
   select(Yr, Seas, FltSvy, Gender, Part, Nsamp, starts_with("l"))
 
 ## Writing data to data.ss file
-data <- SS_readdat_3.30(file = file.path(main_dir, "Model", "data.ss"))
+data <- SS_readdat_3.30(file = file.path(main_dir, "Model", "01_Updated LH", "data.ss"))
 data$Nfleets <- 3
 data$styr <- 1949
 data$endyr <- 2023
@@ -128,4 +144,4 @@ data$len_info <- data.frame(
   minsamplesize = c(.001, .001, .001)
 )
 
-SS_writedat_3.30(data, outfile = file.path(main_dir, "Model", "data.ss"), overwrite = TRUE)
+SS_writedat_3.30(data, outfile = file.path(main_dir, "Model", "01_Updated LH", "data.ss"), overwrite = TRUE)
