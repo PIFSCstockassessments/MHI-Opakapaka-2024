@@ -263,7 +263,7 @@ FRS_1 %>%
 
 ```
 
-### Mean lengths for FRS with more than 1 fish  
+### Mean lengths for FRS with more than 1 fish
 
 I applied some filtering rules:
 

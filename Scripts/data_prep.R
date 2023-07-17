@@ -118,6 +118,55 @@ lencomp <- bfish_len %>%
          Nsamp = Neff) %>% 
   select(Yr, Seas, FltSvy, Gender, Part, Nsamp, starts_with("l"))
 
+# Mean weight 
+# FRS catch data
+FRS.LENGTHS_early <- read.csv(file.path(main_dir, "Data", "PICDR-113273 HDAR Commercial Catch Calendar Year 1948 to Fiscal Year 1993.csv")) %>% 
+  filter(SPECIES == 19)
+FRS.LENGTHS_late <- read.csv(file.path(main_dir, "Data", "PICDR-113273 HDAR Commercial Catch Fiscal Year 1994 to 2022-10-26.csv")) %>% 
+  filter(SPECIES == 19)
+FRS.LENGTHS <- rbind(FRS.LENGTHS_early, FRS.LENGTHS_late)
+# --Use only records from the MHI------------------------------------
+#Read in key table from last assessment for MHI areas (mhi_areas.csv)
+#but keep only those grids Reg Kokbun identified as valid from the
+#CPUE data workshop
+areasReggie=read.csv(file.path(main_dir, "Data", "BF_Area_Grid_Reggie.csv"),header=T)
+valid=areasReggie[which(areasReggie$Valid.==""),]$area
+
+#Remove non-valid subareas (A and B) from area 16123 as well as 
+#records from 16123 without a subarea specified
+####----#####
+mhidata=FRS.LENGTHS[FRS.LENGTHS$AREA%in%valid,] #valid areas
+mhidata=mhidata[!mhidata$SUBAREA%in%c("A","B"),] #remove known invalid subareas (16123A and 16123B)
+mhidata=mhidata[!(mhidata$AREA==16123 & is.na(mhidata$SUBAREA)),] #remove the 16123 records without a subarea distinction
+####----#####
+mean_weights <- mhidata %>% 
+  filter(CAUGHT < 500) %>%  #TODO: Ask John if this is a good cut off or should it be higher/lower
+  filter(CAUGHT > 0 & LBS <= CAUGHT * 21) %>% 
+  mutate(kg = LBS * 0.453592,
+         kg_per_trip = kg/CAUGHT) %>% 
+  group_by(FYEAR) %>% 
+  summarise(mean_kg_per_trip = mean(kg_per_trip),
+            N_caught = sum(CAUGHT), 
+            W_caught = sum(kg), 
+            mean_caught = W_caught/N_caught)
+  
+sd(mean_weights$mean_caught)
+sd(mean_weights$mean_kg_per_trip)
+mean_weights %>% ggplot(aes(x = FYEAR)) +
+  geom_point(aes(y = mean_kg_per_trip), color = "blue") +
+  geom_point(aes(y = mean_caught), color = "orange")
+
+mean_weight_df <- mean_weights %>% 
+  select(FYEAR, mean_kg_per_trip) %>% 
+  mutate(Month = 7,
+         Fleet = 2,
+         Partition = 0, 
+         Type = 2,
+         CV = 0.19/mean_kg_per_trip) %>% 
+  rename("Year" = FYEAR,
+         "Observation" = mean_kg_per_trip) %>% 
+  select(Year, Month, Fleet, Partition, Type, Observation, CV)
+
 ## Writing data to data.ss file
 data <- SS_readdat_3.30(file = file.path(main_dir, "Model", "01_Updated LH", "data.ss"))
 data$Nfleets <- 3
@@ -143,5 +192,10 @@ data$len_info <- data.frame(
   ParmSelect = c(1,2,3),
   minsamplesize = c(.001, .001, .001)
 )
+
+
+data$use_meanbodywt <- 1
+data$meanbodywt <- as.data.frame(mean_weight_df)
+data$DF_for_meanbodywt <- 75
 
 SS_writedat_3.30(data, outfile = file.path(main_dir, "Model", "01_Updated LH", "data.ss"), overwrite = TRUE)
