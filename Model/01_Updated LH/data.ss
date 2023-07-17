@@ -274,6 +274,7 @@
 #_meanbodywt
 0 #_use_meanbodywt
  #_DF_for_meanbodywt_T-distribution_like
+#_Year	Month	Fleet	Partition	Type	Observation	CV  
 #
 #_population_length_bins
 2 # length bin method: 1=use databins; 2=generate from binwidth,min,max below; 3=read vector
@@ -284,9 +285,9 @@
 #
 #_len_info
 #_mintailcomp	addtocomp	combine_M_F	CompressBins	CompError	ParmSelect	minsamplesize
--1	0.001	0	0	0	1	0.001	#_1
--1	0.001	0	0	0	2	0.001	#_2
--1	0.001	0	0	0	3	0.001	#_3
+-1	0.001	0	0	1	1	0.001	#_BFISH   
+-1	0.001	0	0	0	1	0.001	#_FRS     
+-1	0.001	0	0	0	1	0.001	#_Non_comm
 11 #_N_lbins
 #_lbin_vector
 25 30 35 40 45 50 55 60 65 70 75 #_lbin_vector
