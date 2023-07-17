@@ -362,9 +362,9 @@
 #
 #_len_info
 #_mintailcomp	addtocomp	combine_M_F	CompressBins	CompError	ParmSelect	minsamplesize
--1	0.001	0	0	1	1	0.001	#_BFISH   
--1	0.001	0	0	0	1	0.001	#_FRS     
--1	0.001	0	0	0	1	0.001	#_Non_comm
+0	0.0001	0	0	1	1	0.1 #_BFISH   
+0	0.0001	0	0	1	1	0.1	#_FRS     
+0	0.0001	0	0	1	1	0.1	#_Non_comm
 11 #_N_lbins
 #_lbin_vector
 25 30 35 40 45 50 55 60 65 70 75 #_lbin_vector
