@@ -84,4 +84,5 @@ runnumber.ss
 *.png
 *.html
 *.rep
+*.txt
 plotInfoTable*.csv
