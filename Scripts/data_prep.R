@@ -57,7 +57,7 @@ bind_rows(BFISH.LENGTHS, CAM.LENGTHS) %>%
 
 CATCH <- read.csv(file.path(main_dir, "Data", "Opakapaka_catch.csv")) %>% 
   pivot_longer(cols = -Year, names_to = "fleet_name", values_to = "catch") %>% 
-  mutate(catch = catch/1000000) %>% 
+  mutate(catch = catch*0.000453592) %>% #convert to mt
   filter(Year > 1948) %>% 
   mutate(seas = 1,
          fleet = ifelse(fleet_name == "Commercial",2,3), 
@@ -167,8 +167,38 @@ mean_weight_df <- mean_weights %>%
          "Observation" = mean_kg_per_trip) %>% 
   select(Year, Month, Fleet, Partition, Type, Observation, CV)
 
+
+# UFA Length Data
+ufa <- read.csv(file.path(main_dir, "Data", "UFA_paka_lengths.csv"))
+
+ufa.effN <- ufa %>% 
+  # group_by(Year, Date) %>% 
+  # summarise(Ntrips = n_distinct(Vessel)) %>% 
+  # ungroup() %>% 
+  group_by(Year) %>% 
+  summarise(Nsamp = n()) # sum(Ntrips)
+
+ufa$length_bin_start <- ufa$FL-(ufa$FL%%BIN_SIZE)
+ufa.lencomp <- ufa %>% 
+  group_by(Year, length_bin_start) %>% 
+  summarise(Nsamp = n()) %>% 
+  mutate(length_bin_start = paste0("l", length_bin_start)) %>% 
+  pivot_wider(names_from = length_bin_start, values_from = Nsamp, values_fill = 0) %>% 
+  ungroup() %>% 
+  mutate(Yr = Year, 
+         Seas = 1, 
+         FltSvy = 2, 
+         Gender = 0, 
+         Part = 0,
+         Seas = ifelse(Yr == 2019|Yr == 2020, -1, 1),
+         FltSvy = ifelse(Yr == 2020, -2, 2),
+         Nsamp = ufa.effN$Nsamp
+         ) %>% 
+  select(Yr, Seas, FltSvy, Gender, Part, Nsamp, starts_with("l"))
+
+
 ## Writing data to data.ss file
-data <- SS_readdat_3.30(file = file.path(main_dir, "Model", "01_Updated LH", "data.ss"))
+data <- SS_readdat_3.30(file = file.path(main_dir, "Model", "05_UFA", "data.ss"))
 data$Nfleets <- 3
 data$styr <- 1949
 data$endyr <- 2023
@@ -180,22 +210,21 @@ data$CPUE <- CPUE
 data$CPUEinfo <- data.frame(Fleet = c(1,2,3), Units =c(1,1,1), Errtype = c(0,0,0), SD_Report = c(0,0,0))
 
 
-data$lencomp <- as.data.frame(lencomp)
-data$lbin_vector <- sort(unique(bfish_len$LENGTH_BIN_START))
+data$lencomp <- as.data.frame(ufa.lencomp)
+data$lbin_vector <- sort(unique(ufa$length_bin_start))
 data$N_lbins <- length(data$lbin_vector)
 data$len_info <- data.frame(
-  mintailcomp = rep(-1, 3),
-  addtocomp = rep(0.001, 3), 
+  mintailcomp = rep(0, 3),
+  addtocomp = rep(0.0001, 3), 
   combine_M_F = rep(0,3),
   CompressBins = rep(0,3), 
-  CompError = rep(0,3),
-  ParmSelect = c(1,2,3),
-  minsamplesize = c(.001, .001, .001)
+  CompError = rep(1,3),
+  ParmSelect = c(1,1,1),
+  minsamplesize = c(.1, .1, .1)
 )
-
 
 data$use_meanbodywt <- 1
 data$meanbodywt <- as.data.frame(mean_weight_df)
 data$DF_for_meanbodywt <- 75
 
-SS_writedat_3.30(data, outfile = file.path(main_dir, "Model", "01_Updated LH", "data.ss"), overwrite = TRUE)
+SS_writedat_3.30(data, outfile = file.path(main_dir, "Model", "05_UFA", "data.ss"), overwrite = TRUE)
