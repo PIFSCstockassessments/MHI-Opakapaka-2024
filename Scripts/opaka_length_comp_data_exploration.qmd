@@ -122,7 +122,7 @@ The length-weight relationship is defined as L=(W/a)\^(1/b) where a = 1.75e-05 a
 FRS.LENGTHS %>% 
   filter(FYEAR >= 1949) %>% 
   filter(CAUGHT == 1) %>%
-  mutate(kg = (LBS *0.45359237),
+  mutate(kg = (LBS / 2.205),
     L = (kg/1.75e-05)^(1/2.99)) %>% 
   summarise(min_lbs = min(LBS),
             max_lbs = max(LBS),
@@ -132,7 +132,7 @@ FRS.LENGTHS %>%
 FRS_1 <- FRS.LENGTHS %>% 
   filter(FYEAR >= 1949) %>% 
   filter(CAUGHT == 1 & LBS <= 21) %>% 
-  mutate(kg = (LBS *0.45359237),
+  mutate(kg = (LBS / 2.205),
     L = (kg/1.75e-05)^(1/2.99)) %>%
   mutate(YEAR = FYEAR, 
          LENGTH_CM = L,
@@ -168,7 +168,7 @@ FRS_1 %>%
 # FRS.LENGTHS %>% 
 #   filter(FYEAR >= 1949) %>% 
 #   filter(CAUGHT == 1 & LBS <= 21) %>% 
-#   mutate(kg = (LBS *0.45359237),
+#   mutate(kg = (LBS / 2.205),
 #     L = (kg/1.75e-05)^(1/2.99)) %>% 
 #   select(FYEAR, LBS, kg, L) %>% 
 #   filter(L < 29)
@@ -279,7 +279,7 @@ FRS_5 <- FRS.LENGTHS %>%
   filter(LBS <= CAUGHT * 21) %>% 
   mutate(mean_lbs = LBS/CAUGHT) %>% 
   select(FYEAR, CAUGHT, LBS, mean_lbs) %>% 
-  mutate(kg = (mean_lbs *0.45359237),
+  mutate(kg = (mean_lbs / 2.205),
     L = (kg/1.75e-05)^(1/2.99),
     Num_group = as.factor(5)) 
 
@@ -291,7 +291,7 @@ FRS_10 <- FRS.LENGTHS %>%
   filter(LBS <= CAUGHT * 21) %>% 
   mutate(mean_lbs = LBS/CAUGHT) %>% 
   select(FYEAR, CAUGHT, LBS, mean_lbs) %>% 
-  mutate(kg = (mean_lbs *0.45359237),
+  mutate(kg = (mean_lbs / 2.205),
     L = (kg/1.75e-05)^(1/2.99),
     Num_group = as.factor(10)) 
 
@@ -303,7 +303,7 @@ FRS_all <- FRS.LENGTHS %>%
   filter(LBS <= CAUGHT * 21) %>% 
   mutate(mean_lbs = LBS/CAUGHT) %>% 
   select(FYEAR, CAUGHT, LBS, mean_lbs) %>% 
-  mutate(kg = (mean_lbs *0.45359237),
+  mutate(kg = (mean_lbs / 2.205),
     L = (kg/1.75e-05)^(1/2.99),
     Num_group = as.factor("all")) 
 FRS_all <-  as.data.frame(lapply(FRS_all, rep, FRS_all$CAUGHT))

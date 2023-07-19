@@ -8,13 +8,13 @@ main_dir <- this.path::here(..=1)
 #   select(SCIENTIFIC_NAME,SPECIES,SPECIES_ID,LW_A,LW_B,BINWIDTH)
 
 BFISH.LENGTHS <- fread(file.path(main_dir,"Data", "paka_catch_2016_2022.csv")) %>% 
-  filter(SPECIES_CD == "PRFI" & LENGTH_CM >= 29) %>% #filter for fish at 29cm or above bc that was done for index standardization (29cm = size limit)
+  filter(SPECIES_CD == "PRFI" & !is.na(LENGTH_CM)) %>% #& LENGTH_CM >= 29 filter for fish at 29cm or above bc that was done for index standardization (29cm = size limit)
   select(c(YEAR, SAMPLE_ID, LENGTH_CM)) %>% 
   mutate(YEAR = as.numeric(YEAR)+1,
          GROUP = "RESFISH")
 
 CAM.LENGTHS <- read.csv(file.path(main_dir, "Data", "2022_CAM_LENGTHS.csv")) %>% 
-  filter(SPECIES_CD == "PRFI" & MEAN_MM >= 290) %>%
+  filter(SPECIES_CD == "PRFI" ) %>% #& MEAN_MM >= 290
   separate(col = BFISH, into = c("BFISH", "YEAR", "Seas")) %>% 
   mutate(LENGTH_CM = MEAN_MM/10,
          GROUP = "CAM",
@@ -142,7 +142,7 @@ mhidata=mhidata[!(mhidata$AREA==16123 & is.na(mhidata$SUBAREA)),] #remove the 16
 mean_weights <- mhidata %>% 
   filter(CAUGHT < 500) %>%  #TODO: Ask John if this is a good cut off or should it be higher/lower
   filter(CAUGHT > 0 & LBS <= CAUGHT * 21) %>% 
-  mutate(kg = LBS * 0.453592,
+  mutate(kg = LBS / 2.205,
          kg_per_trip = kg/CAUGHT) %>% 
   group_by(FYEAR) %>% 
   summarise(mean_kg_per_trip = mean(kg_per_trip),
@@ -167,6 +167,64 @@ mean_weight_df <- mean_weights %>%
          "Observation" = mean_kg_per_trip) %>% 
   select(Year, Month, Fleet, Partition, Type, Observation, CV)
 
+### FRS length comps
+# frs.len <- mhidata %>% 
+#   filter(FYEAR >= 1949) %>% 
+#   filter(CAUGHT == 1 & LBS <= 21) %>% 
+#   mutate(kg = (LBS / 2.205),
+#          L = (kg/1.75e-05)^(1/2.99)) %>% 
+#   select(FYEAR, kg, L)
+# frs.effN <- frs.len %>% 
+#   group_by(FYEAR) %>% 
+#   summarise(Nsamp = n())
+frs.len$LENGTH_BIN_START <- frs.len$L-(frs.len$L%%BIN_SIZE)
+frs.lencomp <- frs.len %>% 
+  rename("Year" = "FYEAR") %>% 
+  mutate(Year = as.numeric(Year),
+         LENGTH_BIN_START = as.numeric(LENGTH_BIN_START)) %>% 
+  group_by(Year, LENGTH_BIN_START) %>% 
+  summarise(Nsamp = n()) %>%
+  mutate(LENGTH_BIN_START = paste0("l", LENGTH_BIN_START)) %>% 
+  pivot_wider(names_from = LENGTH_BIN_START, values_from = Nsamp, values_fill = 0) %>% 
+  ungroup() %>% 
+  mutate(Yr = Year, 
+         Seas = 1, 
+         FltSvy = 2, 
+         Gender = 0, 
+         Part = 0,
+         Nsamp = frs.effN$Nsamp
+  ) %>% 
+  select(Yr, Seas, FltSvy, Gender, Part, Nsamp, starts_with("l"))
+write.csv(frs.lencomp,file.path(main_dir, "Model", "07_FRS1_lencomp", "lencomp.csv"))
+
+
+frs.wgt <- mhidata %>% 
+  filter(FYEAR >= 1949) %>% 
+  filter(CAUGHT == 1 & LBS <= 21) %>% 
+  select(FYEAR, LBS) %>% 
+  mutate(LBS = round(LBS))
+frs.effN <- frs.wgt %>% 
+  group_by(FYEAR) %>% 
+  summarise(Nsamp = n())
+
+frs.wgtcomp <- frs.wgt %>% 
+  group_by(FYEAR, LBS) %>% 
+  summarise(N = n()) %>% 
+  mutate(LBS = paste0("w", LBS)) %>% 
+  pivot_wider(names_from = LBS, values_from = N, values_fill = 0) %>% 
+  ungroup() %>% 
+  mutate(
+    method = 1,
+    year = FYEAR,
+    month = 7,
+    fleet = 2,
+    gender = 0, 
+    Part = 0, 
+    Nsamp = frs.effN$Nsamp
+  ) %>% 
+  select(method, year, month, fleet, gender, Part, Nsamp, contains("w"))
+
+write.csv(frs.wgtcomp, file.path(main_dir, "Model", "07_FRS1_lencomp", "weight.comp.csv"))
 
 # UFA Length Data
 ufa <- read.csv(file.path(main_dir, "Data", "UFA_paka_lengths.csv"))
@@ -198,7 +256,7 @@ ufa.lencomp <- ufa %>%
 
 
 ## Writing data to data.ss file
-data <- SS_readdat_3.30(file = file.path(main_dir, "Model", "05_UFA", "data.ss"))
+data <- SS_readdat_3.30(file = file.path(main_dir, "Model", "07_FRS1_lencomp", "data.ss"))
 data$Nfleets <- 3
 data$styr <- 1949
 data$endyr <- 2023
@@ -210,8 +268,8 @@ data$CPUE <- CPUE
 data$CPUEinfo <- data.frame(Fleet = c(1,2,3), Units =c(1,1,1), Errtype = c(0,0,0), SD_Report = c(0,0,0))
 
 
-data$lencomp <- as.data.frame(ufa.lencomp)
-data$lbin_vector <- sort(unique(ufa$length_bin_start))
+data$lencomp <- as.data.frame(frs.lencomp)
+data$lbin_vector <- sort(unique(bfish_len$LENGTH_BIN_START))
 data$N_lbins <- length(data$lbin_vector)
 data$len_info <- data.frame(
   mintailcomp = rep(0, 3),
@@ -227,4 +285,4 @@ data$use_meanbodywt <- 1
 data$meanbodywt <- as.data.frame(mean_weight_df)
 data$DF_for_meanbodywt <- 75
 
-SS_writedat_3.30(data, outfile = file.path(main_dir, "Model", "05_UFA", "data.ss"), overwrite = TRUE)
+SS_writedat_3.30(data, outfile = file.path(main_dir, "Model", "06_BFISH_all", "data.ss"), overwrite = TRUE)
