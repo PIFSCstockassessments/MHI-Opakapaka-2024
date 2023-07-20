@@ -119,14 +119,14 @@
 #_Q_setup for fleets with cpue or survey data
 #_fleet	link	link_info	extra_se	biasadj	float  #  fleetname
     1	1	0	1	0	0	#_1         
-    2	1	0	1	0	0	#_2         
+    2	1	0	0	0	0	#_2         
 -9999	0	0	0	0	0	#_terminator
 #_Q_parms(if_any);Qunits_are_ln(q)
 #_LO	HI	INIT	PRIOR	PR_SD	PR_type	PHASE	env-var	use_dev	dev_mnyr	dev_mxyr	dev_PH	Block	Blk_Fxn  #  parm_name
 -5	5	0	0	0	0	 1	0	0	0	0	0	0	0	#_LnQ_base        
  0	2	0	0	0	0	 1	0	0	0	0	0	0	0	#_LnQ_base_extraSE
 -10	20	0	0	0	0	 1	0	0	0	0	0	0	0	#_LnQ_base  
- 0	2	0	0	0	0	 1	0	0	0	0	0	0	0	#_LnQ_base_extraSE      
+# 0	2	0	0	0	0	 1	0	0	0	0	0	0	0	#_LnQ_base_extraSE      
 #_no timevary Q parameters
 #
 #_size_selex_patterns
@@ -167,6 +167,7 @@
 #
 # Input variance adjustments factors: 
 #_Data_type Fleet Value
+7 1 0.3239
 -9999 1 0 # terminator
 #
 5 #_maxlambdaphase
