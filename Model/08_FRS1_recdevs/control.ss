@@ -133,7 +133,7 @@
 #_Pattern	Discard	Male	Special
 1 0 0 0 #_1 3 FRS
 5	0	0	1	#_1 1 BFISH mirror FRS
-5	0	0	1	#_1 2 Non_comm - mirror from BFISH
+1	0	0	0	#_1 2 Non_comm - mirror from BFISH
 #_age_selex_patterns
 #_Pattern	Discard	Male	Special
 0	0	0	0	#_1 1
