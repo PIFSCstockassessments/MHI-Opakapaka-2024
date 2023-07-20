@@ -4,9 +4,9 @@
 #
 0 # 0 means do not read wtatage.ss; 1 means read and usewtatage.ss and also read and use growth parameters
 1 #_N_Growth_Patterns
-3 #_N_platoons_Within_GrowthPattern
-0.7 #_Morph_between/within_stdev_ratio
--1 0 0 # vector_Morphdist_(-1_in_first_val_gives_normal_approx)
+1 #_N_platoons_Within_GrowthPattern
+#0.7 #_Morph_between/within_stdev_ratio
+#-1 0 0 # vector_Morphdist_(-1_in_first_val_gives_normal_approx)
 4 # recr_dist_method for parameters
 1 # not yet implemented; Future usage:Spawner-Recruitment; 1=global; 2=by area
 1 # number of recruitment settlement assignments 
@@ -113,25 +113,27 @@
 4 # N iterations for tuning F in hybrid method (recommend 3 to 7)
 #
 #_initial_F_parms; count = 0
-#
+#_LO	HI	INIT	PRIOR	PR_SD	PR_type	PHASE
+0	3	0.1	0	0	0	1	#_1#
+#0	3	0.1	0	0	0	1	#_1#
 #_Q_setup for fleets with cpue or survey data
 #_fleet	link	link_info	extra_se	biasadj	float  #  fleetname
     1	1	0	1	0	0	#_1         
-    2	1	0	1	0	0	#_2         
+    2	1	0	0	0	0	#_2         
 -9999	0	0	0	0	0	#_terminator
 #_Q_parms(if_any);Qunits_are_ln(q)
 #_LO	HI	INIT	PRIOR	PR_SD	PR_type	PHASE	env-var	use_dev	dev_mnyr	dev_mxyr	dev_PH	Block	Blk_Fxn  #  parm_name
 -5	5	0	0	0	0	 1	0	0	0	0	0	0	0	#_LnQ_base        
  0	2	0	0	0	0	 1	0	0	0	0	0	0	0	#_LnQ_base_extraSE
 -10	20	0	0	0	0	 1	0	0	0	0	0	0	0	#_LnQ_base  
- 0	2	0	0	0	0	 1	0	0	0	0	0	0	0	#_LnQ_base_extraSE      
+# 0	2	0	0	0	0	 1	0	0	0	0	0	0	0	#_LnQ_base_extraSE      
 #_no timevary Q parameters
 #
 #_size_selex_patterns
 #_Pattern	Discard	Male	Special
 1 0 0 0 #_1 3 FRS
 5	0	0	1	#_1 1 BFISH mirror FRS
-5	0	0	1	#_1 2 Non_comm - mirror from BFISH
+1	0	0	0	#_1 2 Non_comm - mirror from BFISH
 #_age_selex_patterns
 #_Pattern	Discard	Male	Special
 0	0	0	0	#_1 1
@@ -148,8 +150,8 @@
 -1 -1 -1 -1 99 0 -99 0 0 0 0 0 0 0  #_2
 #
 #Non-comm LenSelex
--1 -1 -1 -1 99 0 -99 0 0 0 0 0 0 0  #_1
--1 -1 -1 -1 99 0 -99 0 0 0 0 0 0 0  #_2
+0 60 40 0 0 0 -2 0 0 0 0 0 0 0  #_1
+0 40 11 0 0 0 -2 0 0 0 0 0 0 0  #_2
 #
 #_AgeSelex
 #_No age_selex_parm
@@ -165,6 +167,7 @@
 #
 # Input variance adjustments factors: 
 #_Data_type Fleet Value
+7 1 0.3239
 -9999 1 0 # terminator
 #
 5 #_maxlambdaphase
