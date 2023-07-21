@@ -75,7 +75,7 @@
 0 # 0/1 to use steepness in initial equ recruitment calculation
 0 # future feature: 0/1 to make realized sigmaR a function of SR curvature
 #_LO	HI	INIT	PRIOR	PR_SD	PR_type	PHASE	env-var	use_dev	dev_mnyr	dev_mxyr	dev_PH	Block	Blk_Fxn # parm_name
-0.001	10	5	0	0	0	  1	0	0	0	0	0	0	0	#_SR_LN(R0)  
+0.01	10	7	0	0	0	  1	0	0	0	0	0	0	0	#_SR_LN(R0)  
  0.2	1	0.76	0	0	0	 -2	0	0	0	0	0	0	0	#_SR_BH_steep
    0	2	0.52	0	0	0	 -4	0	0	0	0	0	0	0	#_SR_sigmaR  
   -5	5	   0	0	0	0	 -4	0	0	0	0	0	0	0	#_SR_regime  
@@ -90,11 +90,11 @@
 -4 #_recdev_early_phase
 0 #_forecast_recruitment phase (incl. late recr) (0 value resets to maxphase+1)
 1 #_lambda for Fcast_recr_like occurring before endyr+1
-1876.0   #_last_early_yr_nobias_adj_in_MPD 
-1981.2   #_first_yr_fullbias_adj_in_MPD 
-2019.4   #_last_yr_fullbias_adj_in_MPD 
-2021.6   #_first_recent_yr_nobias_adj_in_MPD 
-0.956  #_max_bias_adj_in_MPD (1.0 to mimic pre-2009 models) 
+1923.0   #_last_early_yr_nobias_adj_in_MPD 
+1983.0   #_first_yr_fullbias_adj_in_MPD 
+2020.0   #_last_yr_fullbias_adj_in_MPD 
+2020.1   #_first_recent_yr_nobias_adj_in_MPD 
+0.8843  #_max_bias_adj_in_MPD (1.0 to mimic pre-2009 models)  
 0 #_period of cycles in recruitment (N parms read below)
 -5 #min rec_dev
 5 #max rec_dev
@@ -156,7 +156,7 @@
 #_AgeSelex
 #_No age_selex_parm
 #_Dirichlet parameters
-#-5	10	0	0	1.816	6	2	0	0	0	0	0	0	0	#_Dirichlet_Theta
+-5	10	0	0	1.816	6	2	0	0	0	0	0	0	0	#_Dirichlet_Theta
 #_no timevary selex parameters
 #
 0 #  use 2D_AR1 selectivity(0/1):  experimental feature
@@ -167,7 +167,7 @@
 #
 # Input variance adjustments factors: 
 #_Data_type Fleet Value
-7 1 0.3239
+#7 1 0.3
 -9999 1 0 # terminator
 #
 5 #_maxlambdaphase

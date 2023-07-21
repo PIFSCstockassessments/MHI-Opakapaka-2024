@@ -299,12 +299,15 @@
 #_MeanSize_at_Age_obs
 0 #_use_MeanSize_at_Age_obs
 0 #_N_environ_variables
-1 #_N_sizefreq_methods
+-1 #_N_sizefreq_methods
+1 #N_sizefreq_methods
 21 #sizefreq N bins
 2 #sizefreq units
 1 #scale 2=lbs
-1e-009
+1e-009 # Mincompression
 75 #N obs size freq
+1 #comp error structure
+1 #param select
 #sizefreq bins
 0.453592	0.907184	1.360776	1.814368	2.26796	2.721552	3.175144	3.628736	4.082328	4.53592	4.989512	5.443104	5.896696	6.350288	6.80388	7.257472	7.711064	8.164656	8.618248	9.07184	9.525432
 #method	year	month	fleet	gender	Part	Nsamp	w1	w2	w3	w4	w5	w6	w7	w8	w9	w10	w11	w12	w13	w14	w15	w16	w17	w18	w20	w19	w21
