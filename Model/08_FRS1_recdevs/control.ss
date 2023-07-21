@@ -94,7 +94,7 @@
 1983.0   #_first_yr_fullbias_adj_in_MPD 
 2020.0   #_last_yr_fullbias_adj_in_MPD 
 2020.1   #_first_recent_yr_nobias_adj_in_MPD 
-0.8843  #_max_bias_adj_in_MPD (1.0 to mimic pre-2009 models)  
+0.8843  #_max_bias_adj_in_MPD (1.0 to mimic pre-2009 models) 
 0 #_period of cycles in recruitment (N parms read below)
 -5 #min rec_dev
 5 #max rec_dev
