@@ -14,7 +14,7 @@ BFISH.LENGTHS <- fread(file.path(main_dir,"Data", "paka_catch_2016_2022.csv")) %
          GROUP = "RESFISH")
 
 CAM.LENGTHS <- read.csv(file.path(main_dir, "Data", "2022_CAM_LENGTHS.csv")) %>% 
-  filter(SPECIES_CD == "PRFI" ) %>% #& MEAN_MM >= 290
+  filter(SPECIES_CD == "PRFI" & MEAN_MM >= 290) %>% #& MEAN_MM >= 290
   separate(col = BFISH, into = c("BFISH", "YEAR", "Seas")) %>% 
   mutate(LENGTH_CM = MEAN_MM/10,
          GROUP = "CAM",
@@ -41,7 +41,7 @@ BFISH.LENGTHS %>%
   ggplot(aes(x = LENGTH_CM, GROUP = SAMPLE_ID)) + 
   geom_histogram(show.legend = FALSE) + facet_wrap(~SAMPLE_ID)
 
-Neff <- N.samp.fishing$Nsamp_fishing
+Neff <- N.samp.cam$Nsamp_cam
 
 Neff <- BFISH.LENGTHS %>% 
   group_by(YEAR) %>% 
@@ -100,7 +100,7 @@ CPUE <- read.csv(file.path(main_dir, "Data", "opakapaka_FRS_cpue.csv")) %>%
 BIN_SIZE = 5
 # bfish_len <- bind_rows(BFISH.LENGTHS, CAM.LENGTHS) %>% 
 #   select(-c(SAMPLE_ID, DROP_CD)) 
-bfish_len <- BFISH.LENGTHS
+bfish_len <- CAM.LENGTHS
 bfish_len$LENGTH_BIN_START <- bfish_len$LENGTH_CM-(bfish_len$LENGTH_CM%%BIN_SIZE)
 lencomp <- bfish_len %>% 
   group_by(YEAR, LENGTH_BIN_START) %>% 
@@ -113,11 +113,10 @@ lencomp <- bfish_len %>%
          FltSvy = 1, 
          Gender = 0, 
          Part = 0,
-         Seas = ifelse(Yr == 2019|Yr == 2020, -1, 1),
-         FltSvy = ifelse(Yr == 2020, -1, 1),
          Nsamp = Neff) %>% 
   select(Yr, Seas, FltSvy, Gender, Part, Nsamp, starts_with("l"))
-
+## NOTE: If using super-years, need to combine data from years before putting into model. Open lencomp df in excel and set super-years and combine data onto rows with the positive fleet
+write.csv(lencomp, file = file.path(main_dir, "Data", "bfish_camera_lencomp.csv"))
 # Mean weight 
 # FRS catch data
 FRS.LENGTHS_early <- read.csv(file.path(main_dir, "Data", "PICDR-113273 HDAR Commercial Catch Calendar Year 1948 to Fiscal Year 1993.csv")) %>% 

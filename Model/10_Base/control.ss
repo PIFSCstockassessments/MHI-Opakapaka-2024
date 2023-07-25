@@ -132,7 +132,7 @@
 #_size_selex_patterns
 #_Pattern	Discard	Male	Special
 1 0 0 0 #_1 3 FRS
-5	0	0	1	#_1 1 BFISH mirror FRS
+1	0	0	0	#_1 1 BFISH camera
 1	0	0	0	#_1 2 Non_comm - mirror from BFISH
 #_age_selex_patterns
 #_Pattern	Discard	Male	Special
@@ -146,8 +146,8 @@
 25 50  30  0 0 0 2 0 0 0 0 0 0 0 #_1
 0.1 20  5  0 0 0 2 0 0 0 0 0 0 0 #_2
 #BFISH LenSelex
--1 -1 -1 -1 99 0 -99 0 0 0 0 0 0 0  #_1
--1 -1 -1 -1 99 0 -99 0 0 0 0 0 0 0  #_2
+25 50  30  0 0 0 2 0 0 0 0 0 0 0 #_1
+0.1 20  5  0 0 0 2 0 0 0 0 0 0 0 #_2
 #
 #Non-comm LenSelex
 0 60 40 0 0 0 -2 0 0 0 0 0 0 0  #_1
@@ -156,6 +156,7 @@
 #_AgeSelex
 #_No age_selex_parm
 #_Dirichlet parameters
+-5	10	0	0	1.816	6	2	0	0	0	0	0	0	0	#_Dirichlet_Theta
 -5	10	0	0	1.816	6	2	0	0	0	0	0	0	0	#_Dirichlet_Theta
 #_no timevary selex parameters
 #
