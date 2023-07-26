@@ -280,19 +280,29 @@
 1 # binwidth for population size comp
 1 # minimum size in the population (lower edge of first bin and size at age 0.00)
 94 # maximum size in the population (lower edge of last bin)
-0 #_use_lencomp
+1 #_use_lencomp
 #
 #_len_info
 #_mintailcomp	addtocomp	combine_M_F	CompressBins	CompError	ParmSelect	minsamplesize
-#0	1e-04	0	0	1	1	0.1	#_1
-#0	1e-04	0	0	1	1	0.1	#_2
-#0	1e-04	0	0	1	1	0.1	#_3
-#_N_lbins
+0	1e-04	0	0	0	0	0.1	#_1
+0	1e-04	0	0	1	1	0.1	#_2
+0	1e-04	0	0	0	0	0.1	#_3
+13#_N_lbins
 #_lbin_vector
-#_lbin_vector
+25 30 35 40 45 50 55 60 65 70 75 80 85
 #
 #_lencomp
-#_Yr	Seas	FltSvy	Gender	Part	Nsamp	l10	l15	l20	l25	l30	l35	l40	l45	l50	l55	l60	l65	l70	l75      
+#Yr	Seas	FltSvy	Gender	Part	Nsamp	l25	l30	l35	l40	l45	l50	l55	l60	l65	l70	l75	l80	l85
+2017	-1	 2	0	0	50	0	12	20	21	24	24	26	18	8	1	1	0	0
+2018	-1	-2	0	0	36	0	8	12	17	22	20	22	14	7	1	1	0	0
+2019	-1	 2	0	0	59	10	36	12	34	37	48	39	39	18	6	1	0	0
+2020	 1	-2	0	0	25	9	30	7	12	14	36	24	25	9	4	1	0	0
+2021	-1	-2	0	0	9	0	0	2	16	14	0	2	4	4	1	0	0	0
+2022	-1	 2	0	0	69	6	20	50	53	41	33	37	31	16	9	1	1	1
+2023	-1	-2	0	0	45	4	15	38	33	27	20	23	19	11	7	0	1	1
+-9999	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+
+
 #_terminator
 0 #_N_agebins
 #
@@ -307,7 +317,7 @@
 1e-009 # Mincompression
 75 #N obs size freq
 1 #comp error structure
-1 #param select
+2 #param select
 #sizefreq bins
 0.453592	0.907184	1.360776	1.814368	2.26796	2.721552	3.175144	3.628736	4.082328	4.53592	4.989512	5.443104	5.896696	6.350288	6.80388	7.257472	7.711064	8.164656	8.618248	9.07184	9.525432
 #method	year	month	fleet	gender	Part	Nsamp	w1	w2	w3	w4	w5	w6	w7	w8	w9	w10	w11	w12	w13	w14	w15	w16	w17	w18	w20	w19	w21
