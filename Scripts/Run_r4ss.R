@@ -1,8 +1,8 @@
-remotes::install_github("r4ss/r4ss")
+#remotes::install_github("r4ss/r4ss")
 
 require(r4ss); require(this.path)
 
-dir         <- file.path(this.path::here(.. = 1), "Model","12_Marc_Test_Back to normal_BetterStartVals")
+dir         <- file.path(this.path::here(.. = 1), "Model","12_GrowthAndrewsRefit")
 
 report <- r4ss::SS_output(dir,verbose = FALSE, printstats = FALSE)
 r4ss::SS_plots(report, dir = dir, pdf=F, png=T)
