@@ -3,7 +3,7 @@
 #C should work with SS version: 3.30
 #C file write time: 2023-01-12 11:19:36
 #
-data_spryr_17_19_20_21_22_23.ss #_datfile
+data_no_spryr.ss #_datfile
 control.ss #_ctlfile
 0 #_init_values_src
 1 #_run_display_detail
