@@ -83,18 +83,18 @@
 #_no timevary SR parameters
 1 #do_recdev:  0=none; 1=devvector (R=F(SSB)+dev); 2=deviations (R=F(SSB)+dev); 3=deviations (R=R0*dev; dev2=R-f(SSB)); 4=like 3 with sum(dev2) adding penalty
 1950 # first year of main recr_devs; early devs can preceed this era
-2020 # last year of main recr_devs; forecast devs start in following year
+2023 # last year of main recr_devs; forecast devs start in following year
 2 #_recdev phase
 1 # (0/1) to read 13 advanced options
 0 #_recdev_early_start (0=none; neg value makes relative to recdev_start)
 -4 #_recdev_early_phase
 0 #_forecast_recruitment phase (incl. late recr) (0 value resets to maxphase+1)
 1 #_lambda for Fcast_recr_like occurring before endyr+1
-1923.0   #_last_early_yr_nobias_adj_in_MPD 
-1983.0   #_first_yr_fullbias_adj_in_MPD 
-2020.0   #_last_yr_fullbias_adj_in_MPD 
-2020.1   #_first_recent_yr_nobias_adj_in_MPD 
-0.8843  #_max_bias_adj_in_MPD (1.0 to mimic pre-2009 models)  
+1939.8   #_last_early_yr_nobias_adj_in_MPD 
+1983.6   #_first_yr_fullbias_adj_in_MPD 
+2019.7   #_last_yr_fullbias_adj_in_MPD 
+2024.8   #_first_recent_yr_nobias_adj_in_MPD 
+0.8123  #_max_bias_adj_in_MPD (1.0 to mimic pre-2009 models)   
 0 #_period of cycles in recruitment (N parms read below)
 -5 #min rec_dev
 5 #max rec_dev
@@ -146,8 +146,8 @@
 25 50  30  0 0 0 2 0 0 0 0 0 0 0 #_1
 0.1 20  5  0 0 0 2 0 0 0 0 0 0 0 #_2
 #BFISH LenSelex
-25 50  30  0 0 0 2 0 0 0 0 0 0 0 #_1
-0.1 20  5  0 0 0 2 0 0 0 0 0 0 0 #_2
+0 50  30  0 0 0 2 0 0 0 0 0 0 0 #_1
+0.1 50  5  0 0 0 2 0 0 0 0 0 0 0 #_2
 #
 #Non-comm LenSelex
 0 60 40 0 0 0 -2 0 0 0 0 0 0 0  #_1
