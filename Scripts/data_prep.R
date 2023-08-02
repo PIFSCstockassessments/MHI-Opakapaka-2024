@@ -91,7 +91,7 @@ CPUE <- read.csv(file.path(main_dir, "Data", "opakapaka_FRS_cpue.csv")) %>%
   arrange(index, yr)
 
 # Length comps
-BIN_SIZE = 5
+BIN_SIZE = 2
 load(file.path(main_dir, "Data", "2022.lencomp_dt.RData"))
 load(file.path(main_dir, "Data", "2022.sample_size_dt.RData"))
 
