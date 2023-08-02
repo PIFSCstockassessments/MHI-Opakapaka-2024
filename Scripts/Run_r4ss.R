@@ -2,7 +2,7 @@
 
 require(r4ss); require(this.path)
 
-dir         <- file.path(this.path::here(.. = 1), "Model","12_GrowthAndrewsRefit")
+dir         <- file.path(this.path::here(.. = 1), "Model","12b_GrowthAndrewsRefitCV065")
 
 report <- r4ss::SS_output(dir,verbose = FALSE, printstats = FALSE)
 r4ss::SS_plots(report, dir = dir, pdf=F, png=T)
