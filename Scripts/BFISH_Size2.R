@@ -37,10 +37,10 @@ ggplot(data=D1)+geom_bar(aes(x=LENGTH_BIN_MIN,y=TOTAL_N),stat="identity")+facet_
 
 # Summarize the depths together
 D2 <- D %>% group_by(LENGTH_BIN_MIN) %>% summarize(TOTAL_N=sum(TOTAL_N),N=sum(N)) %>% 
-        mutate(TOTAL_N_PROP=TOTAL_N/sum(TOTAL_N))
+        mutate(TOTAL_N_PROP=TOTAL_N/sum(TOTAL_N),N_PROP=N/sum(N))
 ggplot(data=D2)+geom_bar(aes(x=LENGTH_BIN_MIN,y=TOTAL_N),stat="identity")
 ggplot(data=D2)+geom_bar(aes(x=LENGTH_BIN_MIN,y=TOTAL_N_PROP),stat="identity")
-ggplot(data=D2)+geom_bar(aes(x=LENGTH_BIN_MIN,y=N),stat="identity")
+ggplot(data=D2)+geom_bar(aes(x=LENGTH_BIN_MIN,y=N_PROP),stat="identity")
 
 # Check finale results and create data file for input into SS model
 D3 <- D %>% group_by(YEAR,LENGTH_BIN_MIN) %>% summarize(N=sum(N),TOTAL_N=sum(TOTAL_N)) %>% 
