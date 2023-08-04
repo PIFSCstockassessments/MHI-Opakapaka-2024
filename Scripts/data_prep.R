@@ -76,6 +76,17 @@ bfish_cpue <- read.csv(file.path(main_dir, "Data", "index_dt.csv")) %>%
   rename(yr = time,
          obs = estimate) %>% 
   select(yr, seas, index, obs, obs_log)
+bfish_fish_cpue <- read.csv(file.path(main_dir, "Data", "index_dt.csv")) %>% 
+  filter(model_number == 74) %>%  
+  #filter(str_detect(category, "PRFI")) %>% 
+  dplyr::select(c(time, estimate, cv)) %>% 
+  mutate(seas = 7,
+         index = 4,
+         time = time+1,
+         obs_log = sqrt(log(1+cv^2))) %>% 
+  rename(yr = time,
+         obs = estimate) %>% 
+  select(yr, seas, index, obs, obs_log)
 
 CPUE <- read.csv(file.path(main_dir, "Data", "opakapaka_FRS_cpue.csv")) %>% 
   mutate(seas = 7,
@@ -87,27 +98,35 @@ CPUE <- read.csv(file.path(main_dir, "Data", "opakapaka_FRS_cpue.csv")) %>%
          obs_log = sqrt(log(1+cv^2))) %>% 
   select(yr, seas, index, obs, obs_log) %>% 
   bind_rows(bfish_cpue) %>% 
+  bind_rows(bfish_fish_cpue) %>% 
   filter(yr > 1948) %>% 
   arrange(index, yr)
 
 # Length comps
-BIN_SIZE = 2
+BIN_SIZE = 5
 load(file.path(main_dir, "Data", "2022.lencomp_dt.RData"))
 load(file.path(main_dir, "Data", "2022.sample_size_dt.RData"))
+rc_bfish_len <- read.csv(file.path(main_dir, "Outputs", "Reconstructed_BFISH_SizeComp.csv"))
 
 BFISH.LENGTHS <- lencomp_dt %>% 
   filter(gear == "camera" & all_lengths == TRUE & data_treatment == 1)
+BFISH.fish <- lencomp_dt %>% 
+  filter(gear == "research fishing" & all_lengths == TRUE & data_treatment == 1)
 Ninput <- sample_size_dt %>% 
   filter(gear_type == "camera" & all_lengths == TRUE & data_treatment == 1) %>% 
+  pull( input_sample_size)
+Ninput.fish <- sample_size_dt %>% 
+  filter(gear_type == "research_fishing" & all_lengths == TRUE & data_treatment == 1) %>% 
   pull( input_sample_size)
 
 bfish_len <- BFISH.LENGTHS
 bfish_len$LENGTH_BIN_START <- bfish_len$length_cm-(bfish_len$length_cm%%BIN_SIZE)
-lencomp <- bfish_len %>% 
-  group_by(year, LENGTH_BIN_START) %>% 
-  summarise(Nsamp = n()) %>% 
+lencomp <- bfish_len %>% #rc_bfish_len
+  group_by(year, LENGTH_BIN_START) %>%
+  summarise(Nsamp = n()) %>%
+  #rename(LENGTH_BIN_START = LENGTH_BIN_MIN) %>% 
   mutate(LENGTH_BIN_START = paste0("l", LENGTH_BIN_START)) %>% 
-  pivot_wider(names_from = LENGTH_BIN_START, values_from = Nsamp, values_fill = 0) %>% 
+  pivot_wider(names_from = LENGTH_BIN_START, values_from = N, values_fill = 0) %>% 
   ungroup() %>% 
   mutate(Yr = as.numeric(year) + 1, 
          Seas = 1, 
@@ -117,7 +136,25 @@ lencomp <- bfish_len %>%
          Nsamp = Ninput) %>% 
   select(Yr, Seas, FltSvy, Gender, Part, Nsamp, starts_with("l"))
 ## NOTE: If using super-years, need to combine data from years before putting into model. Open lencomp df in excel and set super-years and combine data onto rows with the positive fleet
-write.csv(lencomp, file = file.path(main_dir, "Data", "bfish_camera_lencomp_raw.csv"), row.names = F)
+write.csv(lencomp, file = file.path(main_dir, "Outputs", "bfish_camera_lencomp_raw.csv"), row.names = F)
+
+bfish_len_fish <- BFISH.fish
+bfish_len_fish$LENGTH_BIN_START <- bfish_len_fish$length_cm-(bfish_len_fish$length_cm%%BIN_SIZE)
+lencomp_fish <- bfish_len_fish %>% 
+  group_by(year, LENGTH_BIN_START) %>% 
+  summarise(Nsamp = n()) %>% 
+  mutate(LENGTH_BIN_START = paste0("l", LENGTH_BIN_START)) %>% 
+  pivot_wider(names_from = LENGTH_BIN_START, values_from = Nsamp, values_fill = 0) %>% 
+  ungroup() %>% 
+  mutate(Yr = as.numeric(year) + 1, 
+         Seas = 1, 
+         FltSvy = 4, 
+         Gender = 0, 
+         Part = 0,
+         Nsamp = Ninput.fish) %>% 
+  select(Yr, Seas, FltSvy, Gender, Part, Nsamp, starts_with("l"))
+## NOTE: If using super-years, need to combine data from years before putting into model. Open lencomp df in excel and set super-years and combine data onto rows with the positive fleet
+write.csv(lencomp_fish, file = file.path(main_dir, "Outputs", "bfish_fishing_lencomp_raw.csv"), row.names = F)
 # Mean weight 
 # FRS catch data
 FRS.LENGTHS_early <- read.csv(file.path(main_dir, "Data", "PICDR-113273 HDAR Commercial Catch Calendar Year 1948 to Fiscal Year 1993.csv")) %>% 
@@ -256,7 +293,7 @@ ufa.lencomp <- ufa %>%
 
 
 ## Writing data to data.ss file
-data <- SS_readdat_3.30(file = file.path(main_dir, "Model", "13_Camera_index", "data.ss"))
+data <- SS_readdat_3.30(file = file.path(main_dir, "Model", "16_Resfish", "data.ss"))
 data$Nfleets <- 3
 data$styr <- 1949
 data$endyr <- 2023
@@ -285,4 +322,4 @@ data$use_meanbodywt <- 1
 data$meanbodywt <- as.data.frame(mean_weight_df)
 data$DF_for_meanbodywt <- 75
 
-SS_writedat_3.30(data, outfile = file.path(main_dir, "Model", "13_Camera_index", "data.ss"), overwrite = TRUE)
+SS_writedat_3.30(data, outfile = file.path(main_dir, "Model", "16_Resfish", "data.ss"), overwrite = TRUE)
