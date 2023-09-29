@@ -47,22 +47,23 @@ main_dir <- this.path::here(..=1)
 #   geom_freqpoly() +
 #   theme_classic()
 
-CATCH <- read.csv(file.path(main_dir, "Data", "Opakapaka_catch.csv")) %>% 
+CATCH <- read.csv(file.path(main_dir, "Data", "Paka_catch_SS.csv")) %>% 
   pivot_longer(cols = -Year, names_to = "fleet_name", values_to = "catch") %>% 
   mutate(catch = catch*0.000453592) %>% #convert to mt
   filter(Year > 1948) %>% 
   mutate(seas = 1,
-         fleet = ifelse(fleet_name == "Commercial",2,3), 
+         fleet = ifelse(fleet_name == "Commercial",1,3), 
          catch_se = .01) %>% 
   rename(year = Year) %>% 
   select(year, seas, fleet, catch, catch_se) %>% 
-  arrange(fleet, year) 
+  arrange(fleet, year) %>% 
+  mutate(catch = ifelse(is.na(catch), 0.001, catch))
 
 CATCH %>% group_by(fleet) %>% slice_tail(n = 3) %>% summarise(mean(catch))  #0.0677, 0.0700
 
-initcatch <- data.frame(year = c(-999,-999), seas = c(1,1), fleet = c(2,3), catch = c(0,0), catch_se = c(0.01,0.01))
-catch23 <- data.frame(year = c(2023,2023), seas = c(1,1), fleet = c(2,3), catch = c(0.0677,0.0700), catch_se = c(0.01,0.01))
-CATCH <- bind_rows(initcatch, CATCH, catch23) %>% arrange(fleet, year)
+initcatch <- data.frame(year = c(-999,-999), seas = c(1,1), fleet = c(1,3), catch = c(50.7819,0), catch_se = c(0.01,0.01))
+
+CATCH <- bind_rows(initcatch, CATCH) %>% arrange(fleet, year)
   
 
 bfish_cpue <- read.csv(file.path(main_dir, "Data", "index_dt.csv")) %>% 
@@ -88,7 +89,7 @@ bfish_fish_cpue <- read.csv(file.path(main_dir, "Data", "index_dt.csv")) %>%
          obs = estimate) %>% 
   select(yr, seas, index, obs, obs_log)
 
-CPUE <- read.csv(file.path(main_dir, "Data", "opakapaka_FRS_cpue.csv")) %>% 
+CPUE <- read.csv(file.path(main_dir, "Data", "cpue_paka_2023.csv")) %>% 
   mutate(seas = 7,
          index = 1) %>% 
   rename("obs" = "Mean_index",
@@ -99,7 +100,7 @@ CPUE <- read.csv(file.path(main_dir, "Data", "opakapaka_FRS_cpue.csv")) %>%
   select(yr, seas, index, obs, obs_log) %>% 
   bind_rows(bfish_cpue) %>% 
   bind_rows(bfish_fish_cpue) %>% 
-  filter(yr > 1948) %>% 
+  filter(yr > 1948 & !is.na(obs)) %>%
   arrange(index, yr)
 
 # Length comps
@@ -177,7 +178,7 @@ mhidata=mhidata[!mhidata$SUBAREA%in%c("A","B"),] #remove known invalid subareas 
 mhidata=mhidata[!(mhidata$AREA==16123 & is.na(mhidata$SUBAREA)),] #remove the 16123 records without a subarea distinction
 ####----#####
 mean_weights <- mhidata %>% 
-  filter(CAUGHT < 500) %>%  #TODO: Ask John if this is a good cut off or should it be higher/lower
+  filter(CAUGHT < 500) %>%  
   filter(CAUGHT > 0 & LBS <= CAUGHT * 21) %>% 
   mutate(kg = LBS / 2.205,
          kg_per_trip = kg/CAUGHT) %>% 
@@ -293,16 +294,16 @@ ufa.lencomp <- ufa %>%
 
 
 ## Writing data to data.ss file
-data <- SS_readdat_3.30(file = file.path(main_dir, "Model", "16_Resfish", "data.ss"))
-data$Nfleets <- 3
+data <- SS_readdat_3.30(file = file.path(main_dir, "Model", "19_Base", "data.ss"))
+data$Nfleets <- 4
 data$styr <- 1949
 data$endyr <- 2023
 data$catch <- CATCH 
-data$fleetinfo <- data.frame(type = c(3,1,1), surveytiming = c(1,-1,-1), area = c(1,1,1),
-                             units = c(1,1,1), need_catch_mult = c(0,0,0), 
-                             fleetname = c("BFISH", "FRS", "Non_comm"))
+data$fleetinfo <- data.frame(type = c(1,3,1,3), surveytiming = c(-1,1,-1,1), area = c(1,1,1,1),
+                             units = c(1,1,1,1), need_catch_mult = c(0,0,0,0), 
+                             fleetname = c("FRS", "BFISH", "Non_comm", "BFISH_ResFish"))
 data$CPUE <- CPUE
-data$CPUEinfo <- data.frame(Fleet = c(1,2,3), Units =c(1,1,1), Errtype = c(0,0,0), SD_Report = c(0,0,0))
+data$CPUEinfo <- data.frame(Fleet = c(1,2,3,4), Units =c(1,1,1,1), Errtype = c(0,0,0,0), SD_Report = c(0,0,0,0))
 
 
 data$lencomp <- as.data.frame(frs.lencomp)
@@ -322,4 +323,4 @@ data$use_meanbodywt <- 1
 data$meanbodywt <- as.data.frame(mean_weight_df)
 data$DF_for_meanbodywt <- 75
 
-SS_writedat_3.30(data, outfile = file.path(main_dir, "Model", "16_Resfish", "data.ss"), overwrite = TRUE)
+SS_writedat_3.30(data, outfile = file.path(main_dir, "Model", "19_Base", "data.ss"), overwrite = TRUE)
