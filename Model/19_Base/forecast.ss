@@ -10,8 +10,8 @@
 #_Bmark_years: beg_bio, end_bio, beg_selex, end_selex, beg_relF, end_relF,  beg_recr_dist, end_recr_dist, beg_SRparm, end_SRparm (enter actual year, or values of 0 or -integer to be rel. endyr)
 0 0 0 0 0 0 0 0 0 0
 1 #_Bmark_relF_Basis
-2 #_Forecast
-1 #_Nforecastyrs
+-1 #_Forecast
+0 #_Nforecastyrs
 0.2 #_F_scalar
 #_Fcast_years:  beg_selex, end_selex, beg_relF, end_relF, beg_recruits, end_recruits (enter actual year, or values of 0 or -integer to be rel. endyr)
 0 0 0 0 -999 0

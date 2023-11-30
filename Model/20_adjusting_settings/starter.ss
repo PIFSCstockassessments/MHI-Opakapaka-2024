@@ -29,7 +29,7 @@ control.ss #_ctlfile
 4 #_SPR_basis
 4 #_F_report_units
 2 30 #_F_age_range
-0 #_F_report_basis
+2 #_F_report_basis
 0 #_MCMC_output_detail
 0 #_ALK_tolerance
 #
