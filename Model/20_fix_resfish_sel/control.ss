@@ -143,27 +143,24 @@
 0 0 0 0 
 #
 #_SizeSelex
-#_LO	HI	INIT	PRIOR	PR_SD	PR_type	PHASE	env-var	use_dev	dev_mnyr	dev_mxyr	dev_PH	Block	Blk_Fxn  #  parm_name
-#FRS LenSelex
-25 50  30  0 0 0 2 0 0 0 0 0 0 0 #_1
-0.1 20  5  0 0 0 2 0 0 0 0 0 0 0 #_2
-#BFISH LenSelex
-0 50  30  0 0 0 2 0 0 0 0 0 0 0 #_1
-0.1 50  5  0 0 0 2 0 0 0 0 0 0 0 #_2
-#
-#Non-comm LenSelex
-0 60 40 0 0 0 -2 0 0 0 0 0 0 0  #_1
-0 40 11 0 0 0 -2 0 0 0 0 0 0 0  #_2
-#
-#BFISH_ResFish LenSelex
- 10            50      20.5                36             5             0          2          0          0          0          0          0          0          0  #  Size_DblN_peak
- -7             7      -1.05896          -0.5             2             0          3          0          0          0          0          0          0          0  #  Size_DblN_top_logit
- -5            10       -0.0046        1.75             5             0          3          0          0          0          0          0          0          0  #  Size_DblN_ascend_se
- -5            10       4.1395000	         0.1             2             0          -4          0          0          0          0          0          0          0  #  Size_DblN_descend_se
- -999          15          -999            -1             5             0        -99          0          0          0          0          0          0          0  #  Size_DblN_start_logit
- -999          15      -1.6676300             1             5             0          -4          0          0          0          0          0          0          0  #  Size_DblN_end_logit
-#
-#_AgeSelex
+#_          LO            HI          INIT         PRIOR         PR_SD       PR_type      PHASE    env-var    use_dev   dev_mnyr   dev_mxyr     dev_PH      Block    Blk_Fxn  #  parm_name
+# 1   FRS LenSelex
+            25            50       36.0113             0             0             0          2          0          0          0          0          0          0          0  #  Size_inflection_FRS(1)
+           0.1            20       3.46397             0             0             0          2          0          0          0          0          0          0          0  #  Size_95%width_FRS(1)
+# 2   BFISH LenSelex
+             0            50       12.1805             0             0             0          2          0          0          0          0          0          0          0  #  Size_inflection_BFISH(2)
+           0.1            50       17.3868             0             0             0          2          0          0          0          0          0          0          0  #  Size_95%width_BFISH(2)
+# 3   Non_comm LenSelex
+             0            60            40             0             0             0         -2          0          0          0          0          0          0          0  #  Size_inflection_Non_comm(3)
+             0            40            11             0             0             0         -2          0          0          0          0          0          0          0  #  Size_95%width_Non_comm(3)
+# 4   BFISH_ResFish LenSelex
+            10            50          20.5            36             5             0          2          0          0          0          0          0          0          0  #  Size_DblN_peak_BFISH_ResFish(4)
+            -7             7      -1.05702          -0.5             2             0         -3          0          0          0          0          0          0          0  #  Size_DblN_top_logit_BFISH_ResFish(4)
+            -5            10     -0.338084          1.75             5             0         -3          0          0          0          0          0          0          0  #  Size_DblN_ascend_se_BFISH_ResFish(4)
+            -5            10        4.1503           0.1             2             0          4          0          0          0          0          0          0          0  #  Size_DblN_descend_se_BFISH_ResFish(4)
+          -999            15          -999            -1             5             0        -99          0          0          0          0          0          0          0  #  Size_DblN_start_logit_BFISH_ResFish(4)
+          -999            15      -1.72390             1             5             0          4          0          0          0          0          0          0          0  #  Size_DblN_end_logit_BFISH_ResFish(4)
+# AgeSelex
 #_No age_selex_parm
 #_Dirichlet parameters
 -5	10	0	0	1.816	6	2	0	0	0	0	0	0	0	#_Dirichlet_Theta
